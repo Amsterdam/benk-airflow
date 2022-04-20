@@ -1,0 +1,56 @@
+### macOS ###
+# General
+.DS_Store
+
+### PyCharm ###
+.idea/
+
+### VisualStudioCode ###
+.vscode/*
+
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Windows shortcuts
+*.lnk
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
