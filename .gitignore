@@ -55,3 +55,8 @@ venv/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+
+# Airflow
+logs/
+airflow.db
