@@ -23,7 +23,7 @@ with DAG(
         bash_command="date",
     )
     task2 = KubernetesPodOperator(
-        task_id="boa_fase_0",
+        task_id="container_test",
         # namespace=os.getenv("AIRFLOW__KUBERNETES__NAMESPACE", "default"),
         image=container_image,
         cmds=command,
