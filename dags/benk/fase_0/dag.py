@@ -1,3 +1,5 @@
+import os
+
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
@@ -25,6 +27,7 @@ with DAG(
     task2 = KubernetesPodOperator(
         task_id="container_test",
         # namespace=os.getenv("AIRFLOW__KUBERNETES__NAMESPACE", "default"),
+        namespace="airflow-benkbbn1",
         image=container_image,
         cmds=command,
         # arguments=arguments,
