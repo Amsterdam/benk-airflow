@@ -11,6 +11,6 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DAGS_DIR=${PROJECT_DIR}/dags
 echo "Configuring dags dir: ${DAGS_DIR}"
 
-export PYTHONPATH=${PYTHONPATH}:${DAGS_DIR}
+#export PYTHONPATH=${PYTHONPATH}:${DAGS_DIR}
 export AIRFLOW__CORE__DAGS_FOLDER=${DAGS_DIR}
 export AIRFLOW__CORE__LOAD_EXAMPLES=False

@@ -46,6 +46,19 @@ airflow dags list
 
 The dags in this repository should appear.
 
+## Run dags and tasks locally
+
+
+Run a dag
+```bash
+airflow dags test benk_fase-0-try-out 1
+```
+
+Run a task
+```bash
+airflow tasks test benk_fase-0-try-out print_uptime 1
+```
+
 ## Development
 
 ### Code style
