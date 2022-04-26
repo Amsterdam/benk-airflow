@@ -5,10 +5,11 @@ default_args = {
     "depends_on_past": False,
     "start_date": datetime.utcnow(),
     "email": [
-        "roel.kramer@amsterdam.nl"
-    ],  # Set this value if you want email updates on your DAG run
-    "email_on_failure": False,  # Set to True if you want email updates on your DAG run
-    "email_on_retry": False,  # Set to True if you want email updates on your DAG run
+        "roel.kramer@amsterdam.nl",
+        "roel.de.vries@amsterdam.nl"
+    ],
+    "email_on_failure": False,
+    "email_on_retry": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
