@@ -5,10 +5,11 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
 from benk.fase_0.common import default_args
 
 team_name = "benk"
-workload_name = "fase-0-try-out"
+workload_name = "NAP_Extract"
 dag_id = team_name + "_" + workload_name
-
-container_image = "benkontacr.azurecr.io/test-image:latest"
+# TODO: Figure out in which environment this dag is running,
+#  or set an env var with the container_image url in the airflow UI.
+container_image = "benkontacr.azurecr.io/benk-airflow-task:development"
 command = ["/bin/sh", "-c", "/app/entrypoint.sh"]
 
 
@@ -17,9 +18,8 @@ with DAG(
     default_args=default_args,
     template_searchpath=["/"],
 ) as dag:
-    task2 = KubernetesPodOperator(
-        task_id="container_test",
-        # namespace=os.getenv("AIRFLOW__KUBERNETES__NAMESPACE", "default"),
+    nap_extract = KubernetesPodOperator(
+        task_id="NAP_extract",
         namespace="airflow-benkbbn1",
         image=container_image,
         cmds=command,
