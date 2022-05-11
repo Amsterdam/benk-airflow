@@ -47,7 +47,7 @@ with DAG(
         log_events_on_failure=True
     )
     nap_load = KubernetesPodOperator(
-        task_id="NAP_transform",
+        task_id="NAP_load",
         namespace="airflow-benkbbn1",
         image=container_image,
         cmds=command,
