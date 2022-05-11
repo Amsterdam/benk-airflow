@@ -32,3 +32,33 @@ with DAG(
         dag=dag,
         log_events_on_failure=True
     )
+    nap_transform = KubernetesPodOperator(
+        task_id="NAP_transform",
+        namespace="airflow-benkbbn1",
+        image=container_image,
+        cmds=command,
+        # arguments=arguments,
+        labels={"team_name": team_name},
+        name=workload_name,
+        image_pull_policy="Always",
+        get_logs=True,
+        in_cluster=True,
+        dag=dag,
+        log_events_on_failure=True
+    )
+    nap_load = KubernetesPodOperator(
+        task_id="NAP_transform",
+        namespace="airflow-benkbbn1",
+        image=container_image,
+        cmds=command,
+        # arguments=arguments,
+        labels={"team_name": team_name},
+        name=workload_name,
+        image_pull_policy="Always",
+        get_logs=True,
+        in_cluster=True,
+        dag=dag,
+        log_events_on_failure=True
+    )
+
+(nap_extract >> nap_transform >> nap_load)
