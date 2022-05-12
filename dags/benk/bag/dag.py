@@ -11,6 +11,7 @@ with DAG(
     dag_id,
     default_args=default_args,
     template_searchpath=["/"],
+    schedule_interval="0 0 * * *"
 ) as dag:
     bag_extract = BashOperator(
         task_id="BAG_extract_neuron",
