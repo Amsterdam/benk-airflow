@@ -1,10 +1,13 @@
 [flake8]
-ignore = D203,W503
+ignore =
+    # Missing docstring in public package
+    D104
+    # Missing docstring in module
+    D100
 max-line-length = 88
 exclude =
     .git,
     __pycache__,
     .mypy_cache,
     .pytest,
-    .stock_analysis.egg-info
 max-complexity = 10
