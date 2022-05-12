@@ -1,64 +1,31 @@
 from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
-    KubernetesPodOperator
+from airflow.operators.bash import BashOperator
 
-from benk.fase_0.common import default_args
+from benk.bag.common import default_args
 
 team_name = "BenK"
-workload_name = "NAP"
+workload_name = "BAG"
 dag_id = team_name + "_" + workload_name
-# TODO: Figure out in which environment this dag is running,
-#  or set an env var with the container_image url in the airflow UI.
-container_image = "benkontacr.azurecr.io/benk-airflow-task:development"
-command = ["/bin/sh", "-c", "/app/entrypoint.sh"]
-
 
 with DAG(
     dag_id,
     default_args=default_args,
     template_searchpath=["/"],
 ) as dag:
-    nap_extract = KubernetesPodOperator(
-        task_id="NAP_extract",
-        namespace="airflow-benkbbn1",
-        image=container_image,
-        cmds=command,
-        # arguments=arguments,
-        labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        get_logs=True,
-        in_cluster=True,
+    bag_extract = BashOperator(
+        task_id="BAG_extract_neuron",
+        bash_command='echo "Running bag extract..."',
         dag=dag,
-        log_events_on_failure=True
     )
-    nap_transform = KubernetesPodOperator(
-        task_id="NAP_transform",
-        namespace="airflow-benkbbn1",
-        image=container_image,
-        cmds=command,
-        # arguments=arguments,
-        labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        get_logs=True,
-        in_cluster=True,
+    bag_transform = BashOperator(
+        task_id="BAG_transform_to_amsterdam_schema",
+        bash_command='echo "Running bag transform..."',
         dag=dag,
-        log_events_on_failure=True
     )
-    nap_load = KubernetesPodOperator(
-        task_id="NAP_load",
-        namespace="airflow-benkbbn1",
-        image=container_image,
-        cmds=command,
-        # arguments=arguments,
-        labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        get_logs=True,
-        in_cluster=True,
+    bag_load = BashOperator(
+        task_id="BAG_load_to_referentie_db",
+        bash_command='echo "Running bag load..."',
         dag=dag,
-        log_events_on_failure=True
     )
 
-(nap_extract >> nap_transform >> nap_load)
+(bag_extract >> bag_transform >> bag_load)
