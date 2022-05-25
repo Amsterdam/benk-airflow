@@ -21,7 +21,7 @@ with DAG(
         task_id="NAP_extract",
         namespace="airflow-benkbbn1",
         image=container_image,
-        cmds=command,
+        cmds=["python", "/app/benk/nap/extract.py"],
         # arguments=arguments,
         labels={"team_name": team_name},
         name=workload_name,

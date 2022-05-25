@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-#echo "Running mypy"
+echo "Running mypy"
 mypy dags/benk/
 
 echo "Running flake8"
