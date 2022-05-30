@@ -27,6 +27,7 @@ with DAG(
         name=workload_name,
         image_pull_policy="Always",
         get_logs=True,
+        hostnetwork=True,
         in_cluster=True,
         dag=dag,
         log_events_on_failure=True
@@ -41,6 +42,7 @@ with DAG(
         name=workload_name,
         image_pull_policy="Always",
         get_logs=True,
+        hostnetwork=True,
         in_cluster=True,
         dag=dag,
         log_events_on_failure=True
@@ -54,6 +56,7 @@ with DAG(
         labels={"team_name": team_name},
         name=workload_name,
         image_pull_policy="Always",
+        hostnetwork=True,
         get_logs=True,
         in_cluster=True,
         dag=dag,
