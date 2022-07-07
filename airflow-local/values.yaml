@@ -1,0 +1,16 @@
+# Configure airflow to use the created volume
+dags:
+  persistence:
+    # Enable persistent volume for storing dags
+    enabled: true
+    # Volume size for dags
+    size: 1Gi
+    # If using a custom storageClass, pass name here
+    storageClassName: manual
+    # access mode of the persistent volume
+    accessMode: ReadWriteOnce
+    ## the name of an existing PVC to use
+    # airflow/dag-source-dir-claim?
+    existingClaim: dag-source-dir-claim
+    ## optional subpath for dag volume mount
+#    subPath: ~

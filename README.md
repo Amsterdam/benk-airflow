@@ -7,29 +7,38 @@ Kernregistraties. Mainly used to run GOB containers.
 
 ## Kubernetes
 
-### Kubernetes
-
 Enable kubernetes in docker desktop.
 
 preferences -> kubernetes -> Enable kubernetes
 
-### Helm package manager
+## Helm package manager
 
 Install the helm package manager
 
 ```shell
 brew install helm
 ```
+## Volumes
+
+### Create a volume bound to a local directory
+
+```
+kubectl create namespace airflow 
+kubectl apply --namespace airflow -f ./airflow-local/templates
+```
+
 
 ### Install airflow in kubernetes
 
 These commands take a while to complete.
+
 ```shell
 helm repo add apache-airflow https://airflow.apache.org
 helm upgrade \
   --install airflow apache-airflow/airflow \
   --namespace airflow \
   --create-namespace \
+  --values=airflow-local/values.yaml \
   --debug
 ```
 
@@ -62,6 +71,7 @@ Open http://localhost:8080 in your browser and login with:
 
 - username: admin
 - password: admin
+
 
 # Development
 
