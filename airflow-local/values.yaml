@@ -10,7 +10,4 @@ dags:
     # access mode of the persistent volume
     accessMode: ReadWriteOnce
     ## the name of an existing PVC to use
-    # airflow/dag-source-dir-claim?
     existingClaim: dag-source-dir-claim
-    ## optional subpath for dag volume mount
-#    subPath: ~

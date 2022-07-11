@@ -3,13 +3,14 @@
 This repository contains all code to run airflow dags from Basis en 
 Kernregistraties. Mainly used to run GOB containers.
 
-# Run on local kubernetes cluster
+# Run DAGs with Airflow on a local kubernetes cluster
 
 See [README.md](airflow-local/README.md) for installation instructions.
 
 # Development
 
 ## Dependencies
+
 Before installing dependencies, a virtualenv is required.
 
 ```shell
