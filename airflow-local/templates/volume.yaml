@@ -11,4 +11,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/Users/roelkramer/PycharmProjects/boa/benk-airflow/dags"
+    # 4: replace een string in de yaml en gebruik dat (cat pod.json | kubectl create -f -)
+    # 5: DAG maken die dmv values de huidige dir meeneemt:
+    #    - maak dag die die volumes in de namespace installeert
+    #    - installeer daarna de gewone dag
+    # 6:
+    path: "./dags"

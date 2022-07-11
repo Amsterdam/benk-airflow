@@ -3,75 +3,9 @@
 This repository contains all code to run airflow dags from Basis en 
 Kernregistraties. Mainly used to run GOB containers.
 
-# Run local
+# Run on local kubernetes cluster
 
-## Kubernetes
-
-Enable kubernetes in docker desktop.
-
-preferences -> kubernetes -> Enable kubernetes
-
-## Helm package manager
-
-Install the helm package manager
-
-```shell
-brew install helm
-```
-## Volumes
-
-### Create a volume bound to a local directory
-
-```
-kubectl create namespace airflow 
-kubectl apply --namespace airflow -f ./airflow-local/templates
-```
-
-
-### Install airflow in kubernetes
-
-These commands take a while to complete.
-
-```shell
-helm repo add apache-airflow https://airflow.apache.org
-helm upgrade \
-  --install airflow apache-airflow/airflow \
-  --namespace airflow \
-  --create-namespace \
-  --values=airflow-local/values.yaml \
-  --debug
-```
-
-Monitor progress on installing airflow:
-
-```shell
-kubectl get pods --namespace airflow
-```
-
-When done, all pods should display 'Running' or 'Completed' 
-
-```
-NAME                                 READY   STATUS    RESTARTS   AGE
-airflow-postgresql-0                 1/1     Running   0          5m10s
-airflow-redis-0                      1/1     Running   0          5m10s
-airflow-scheduler-75b785f69c-srmgt   2/2     Running   0          5m10s
-airflow-statsd-5bcb9dd76-c456f       1/1     Running   0          5m10s
-airflow-triggerer-5ddcdcdfd9-m4gvn   1/1     Running   0          5m10s
-airflow-webserver-85c4d647d4-qlbhv   1/1     Running   0          5m10s
-airflow-worker-0                     2/2     Running   0          5m10s
-```
-
-Forward airflow admin interface port tot localhost:8080
-
-```shell
-kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow &
-```
-
-Open http://localhost:8080 in your browser and login with:
-
-- username: admin
-- password: admin
-
+See [README.md](airflow-local/README.md) for installation instructions.
 
 # Development
 
