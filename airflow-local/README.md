@@ -1,29 +1,29 @@
-# Airflow on local kubernetes
+# Airflow on local Kubernetes
 
-This is a Chart to run Airflow on kubernetes on development machines. 
+This is a Helm chart to run Airflow on Kubernetes on development machines.
 
-The `../dags/` directory is mounted in pods, so that changes to dags are immediately 
-available to the airflow instance.
+The `../dags/` directory is mounted in pods, so that changes to dags are immediately available to the Airflow instance.
 
-# Install Airflow in local kubernetes
+# Install Airflow in local Kubernetes
 
 ## Kubernetes
 
-Enable kubernetes in docker desktop.
+Enable Kubernetes in Docker Desktop:
 
-preferences -> kubernetes -> Enable kubernetes
+*Preferences -> Kubernetes -> Enable Kubernetes*
 
 ## Helm package manager
 
-Install the helm package manager
+Install the Helm package manager:
 
 ```shell
 brew install helm
 ```
+
 ## Install Airflow
 
-Install the chart from this directory. 
-It installs airflow and configures the volumes to be mounted. 
+Install the chart from this directory.
+It installs Airflow and configures the volumes to be mounted.
 These commands take a while to complete.
 
 ```shell
@@ -47,22 +47,22 @@ airflow-webserver-85c4d647d4-qlbhv   1/1     Running   0          5m10s
 airflow-worker-0                     2/2     Running   0          5m10s
 ```
 
-Forward airflow admin interface port tot localhost:8080
+Forward Airflow UI port to localhost:8080:
 
 ```shell
 kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow &
 ```
 
-Open http://localhost:8080 in your browser and login with:
+Open [localhost:8080](http://localhost:8080) in your browser and login with:
 
-- username: admin
-- password: admin
+- username: `admin`
+- password: `admin`
 
 
-## Remove airflow from kubernetes 
-This removes the entire airflow namespace in kubernetes.
+## Remove Airflow from Kubernetes
+This removes the entire Airflow namespace in Kubernetes.
 
-Additionally, it removes all volumes. 
+Additionally, it removes all volumes.
 
 ```shell
 ./remove.sh
