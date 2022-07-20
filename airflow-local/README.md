@@ -63,6 +63,13 @@ Open [localhost:8080](http://localhost:8080) in your browser and login with:
 - username: `admin`
 - password: `admin`
 
+### Configure DAGS with variables
+
+These variables are suitable to run the dags locally.
+
+Configure TEST variable in the [GUI](http://localhost:8080/variable/list/).
+
+Or click import variables and load variables.json.
 
 ## Remove Airflow from Kubernetes
 This removes the entire Airflow namespace in Kubernetes.

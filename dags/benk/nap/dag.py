@@ -1,5 +1,3 @@
-import textwrap
-
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
@@ -12,11 +10,11 @@ workload_name = "NAP"
 dag_id = team_name + "_" + workload_name
 
 # Namespace is something like 'airflow-benkbbn1' on the actual server
-namespace = Variable.get("AIRFLOW_POD_NAMESPACE", "airflow")
+namespace = Variable.get("AIRFLOW_POD_NAMESPACE", default_var="airflow")
 
 # Configure CONTAINER_REGISTRY_URL in the GUI
 # http://localhost:8080/variable/list/
-container_registry_url = Variable.get("CONTAINER_REGISTRY_URL", None)
+container_registry_url = Variable.get("CONTAINER_REGISTRY_URL", default_var=None)
 
 # https://kubernetes.io/docs/concepts/containers/images/
 # image_pull_policy: "Never", "Always", "IfNotPresent"
@@ -41,11 +39,7 @@ with DAG(
         namespace=namespace,
         image=container_image,
         cmds=[
-            "python", "-c", textwrap.dedent("""
-            import os
-            for k, v in os.environ.items():
-                print(f'{k}: {v}')
-            """)
+            "python", "-m", "gobimport", "import", "nap", "peilmerken"
         ],
         # arguments=arguments,
         labels={"team_name": team_name},
@@ -58,7 +52,8 @@ with DAG(
         log_events_on_failure=True,
         # image_pull_secrets=[V1LocalObjectReference('regcred')],
         # configmaps=["benks-map"],
-        env_vars={"CONTAINER_REGISTRY_URL": "{{ var.value.CONTAINER_REGISTRY_URL }}"},
+        # Configure the TEST var in the admin to make this DAG work.
+        env_vars={"TEST_ENV_VAR": "{{ var.value.TEST }}"},
         # secrets=[] # Secrets()
     )
 
