@@ -67,3 +67,11 @@ Additionally, it removes all volumes.
 ```shell
 ./remove.sh
 ```
+
+# Configure DAGS with variables
+
+These variables are suitable to run the dags locally.
+
+Configure CONTAINER_REGISTRY_URL in the [GUI](http://localhost:8080/variable/list/).
+
+Click import variables and load variables.json.
