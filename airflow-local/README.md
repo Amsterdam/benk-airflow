@@ -6,6 +6,11 @@ The `../dags/` directory is mounted in pods, so that changes to dags are immedia
 
 # Install Airflow in local Kubernetes
 
+## Prerequisites
+
+Requires docker to run on your development machine. 
+Images are pulled from your local registry, so it is best to build all GOB-* images first. 
+
 ## Kubernetes
 
 Enable Kubernetes in Docker Desktop:
@@ -67,11 +72,3 @@ Additionally, it removes all volumes.
 ```shell
 ./remove.sh
 ```
-
-# Configure DAGS with variables
-
-These variables are suitable to run the dags locally.
-
-Configure CONTAINER_REGISTRY_URL in the [GUI](http://localhost:8080/variable/list/).
-
-Click import variables and load variables.json.

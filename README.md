@@ -42,3 +42,10 @@ Both commands are run with:
 ```shell
 ./test.sh
 ```
+
+# Production
+
+## Configure DAGS with variables
+
+Configure CONTAINER_REGISTRY_URL in the [GUI](https://airflow-benkbbn1.dave-o.azure.amsterdam.nl/variable/list/).
+
