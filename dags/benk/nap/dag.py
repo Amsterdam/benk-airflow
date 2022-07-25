@@ -1,32 +1,31 @@
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
-    KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+    KubernetesPodOperator,
+)
+from kubernetes.client import V1EnvVar
 
-from benk.bag.common import default_args
+from benk.nap.common import default_args, get_image_url
 
 team_name = "BenK"
 workload_name = "NAP"
 dag_id = team_name + "_" + workload_name
 
-# Namespace is something like 'airflow-benkbbn1' on the actual server
+# Variables below in the GUI (http://localhost:8080/variable/list/), or leave
+# empty to use defaults.
+
+# The Kubernetes namespace, something like 'airflow-benkbbn1' on the server.
 namespace = Variable.get("AIRFLOW_POD_NAMESPACE", default_var="airflow")
-
-# Configure CONTAINER_REGISTRY_URL in the GUI
-# http://localhost:8080/variable/list/
+# URL to registry, leave empty to use local registry (development environment).
 container_registry_url = Variable.get("CONTAINER_REGISTRY_URL", default_var=None)
+image_name = Variable.get("GOB_IMPORT_IMAGE_NAME", default_var="gob_import")
+# In accept or test environments, different tags could be used. For example:
+# :develop or :test
+tag = Variable.get("GOB_IMPORT_IMAGE_TAG", default_var="latest")
 
-# https://kubernetes.io/docs/concepts/containers/images/
-# image_pull_policy: "Never", "Always", "IfNotPresent"
-container_image = "gob-import_gobimport:latest"
-if container_registry_url is None:
-    # 'Never' prevents importing from a remote repository.
-    image_pull_policy = "Never"
-else:
-    # Should be Always when pulling images from "real" registry.
-    image_pull_policy = "Always"
-    container_image = f"{container_registry_url}/gobimport_test:latest"
-
+image_pull_policy, container_image = get_image_url(
+    registry_url=container_registry_url, image_name=image_name, tag=tag
+)
 print(f"Using {container_image}")
 
 with DAG(
@@ -38,9 +37,7 @@ with DAG(
         task_id=f"{workload_name}-import",
         namespace=namespace,
         image=container_image,
-        cmds=[
-            "python", "-m", "gobimport", "import", "nap", "peilmerken"
-        ],
+        cmds=["python", "-m", "gobimport", "import", "nap", "peilmerken"],
         # arguments=arguments,
         labels={"team_name": team_name},
         name=f"{workload_name}-import",
@@ -50,10 +47,8 @@ with DAG(
         in_cluster=True,
         dag=dag,
         log_events_on_failure=True,
-        # image_pull_secrets=[V1LocalObjectReference('regcred')],
-        # configmaps=["benks-map"],
         # Configure the TEST var in the admin to make this DAG work.
-        env_vars={"TEST_ENV_VAR": "{{ var.value.TEST }}"},
+        env_vars=[V1EnvVar(name="TEST_ENV_VAR", value="{{ var.value.TEST }}")],
         # secrets=[] # Secrets()
     )
 
