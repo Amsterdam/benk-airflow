@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
+from typing import Optional
 
 default_args = {
     "owner": "basis en kernregistraties",
@@ -13,20 +13,34 @@ default_args = {
 }
 
 
-def get_image_url(
-    registry_url: Optional[str], image_name: str, tag: str
-) -> Tuple[str, str]:
+def get_image_url(registry_url: Optional[str], image_name: str, tag: str) -> str:
     """Use a remote image, or a cached image if no URL is given.
 
     :param registry_url: URL of the container registry, None if local image is desired.
     :param image_name: name of the image.
     :param tag: tag of the image.
-    :return: A tuple with pull policy and a URL.
+    :return: An URL to an image, or just an image name.
+    """
+    if registry_url is None:
+        return f"{image_name}:{tag}"
+
+    return f"{registry_url}/{image_name}:{tag}"
+
+
+def get_image_pull_policy(registry_url: Optional[str]) -> str:
+    """Returns desired image pull policy.
+
+    Docs:
+        https://kubernetes.io/docs/concepts/containers/images/
+        image_pull_policy: "Never", "Always" (, "IfNotPresent")
+
+    :param registry_url: URL of the container registry, None if local image is desired.
+    :return: A string with the pull policy (Always, Never)
     """
     if registry_url is None:
         # Pull policy 'Never' prevents importing from a remote repository.
         # This either uses a cached image or a locally built image.
-        return "Never", f"{image_name}:{tag}"
+        return "Never"
 
     # Pull policy Always forces pulling the latest image from a remote registry.
-    return "Always", f"{registry_url}/{image_name}:{tag}"
+    return "Always"

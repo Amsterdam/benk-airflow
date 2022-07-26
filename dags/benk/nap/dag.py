@@ -1,11 +1,13 @@
+import textwrap
+
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-from kubernetes.client import V1EnvVar
 
-from benk.nap.common import default_args, get_image_url
+from benk.nap.common import default_args, get_image_url, get_image_pull_policy
+from benk.settings import Settings
 
 team_name = "BenK"
 workload_name = "NAP"
@@ -23,10 +25,11 @@ image_name = Variable.get("GOB_IMPORT_IMAGE_NAME", default_var="gob_import")
 # :develop or :test
 tag = Variable.get("GOB_IMPORT_IMAGE_TAG", default_var="latest")
 
-image_pull_policy, container_image = get_image_url(
+container_image = get_image_url(
     registry_url=container_registry_url, image_name=image_name, tag=tag
 )
-print(f"Using {container_image}")
+image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
+settings = Settings()
 
 with DAG(
     dag_id,
@@ -47,9 +50,8 @@ with DAG(
         in_cluster=True,
         dag=dag,
         log_events_on_failure=True,
-        # Configure the TEST var in the admin to make this DAG work.
-        env_vars=[V1EnvVar(name="TEST_ENV_VAR", value="{{ var.value.TEST }}")],
-        # secrets=[] # Secrets()
+        env_vars=settings.env_vars()
+        # secrets=[settings.secrets(]
     )
 
 nap_import

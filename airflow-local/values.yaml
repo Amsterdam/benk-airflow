@@ -11,3 +11,8 @@ dags:
     accessMode: ReadWriteOnce
     ## the name of an existing PVC to use
     existingClaim: dag-source-dir-claim
+
+#config:
+#  secrets:
+#    backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
+#    backend_kwargs: {"variables_file_path": "/files/var.json", "connections_file_path": "/files/conn.json" }
