@@ -47,8 +47,6 @@ with DAG(
             "-m",
             "gobimport",
             "import",
-            "--xcom_data",
-            "{{ task_instance.xcom_pull('write-xcom') }}",
             "nap",
             "peilmerken",
         ],
