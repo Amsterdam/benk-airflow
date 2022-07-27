@@ -6,12 +6,8 @@ export PYTHONPATH=${PYTHONPATH}:dags/
 echo "Running mypy"
 mypy "${DAGS_PATH}"
 
-echo "Checking for valid python"
-for FILE in "${DAGS_PATH}"*/**.py
-do
-  echo "Checking ${FILE}"
-  python "${FILE}"
-done
+echo "Running tests"
+pytest tests/
 
 echo "Check if black finds no potential reformat fixes"
 black --check ${DAGS_PATH}

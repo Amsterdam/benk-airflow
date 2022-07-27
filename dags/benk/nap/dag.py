@@ -37,20 +37,30 @@ with DAG(
     template_searchpath=["/"],
 ) as dag:
     nap_import = KubernetesPodOperator(
+        dag=dag,
         task_id=f"{workload_name}-import",
         namespace=namespace,
         image=container_image,
-        cmds=["python", "-m", "gobimport", "import", "nap", "peilmerken"],
-        # arguments=arguments,
-        labels={"team_name": team_name},
         name=f"{workload_name}-import",
-        image_pull_policy=image_pull_policy,
-        get_logs=True,
-        hostnetwork=True,
+        cmds=[
+            "python",
+            "-m",
+            "gobimport",
+            "import",
+            "--xcom_data",
+            "{{ task_instance.xcom_pull('write-xcom') }}",
+            "nap",
+            "peilmerken",
+        ],
+        env_vars=settings.env_vars(),
+        labels={"team_name": team_name},
         in_cluster=True,
-        dag=dag,
+        get_logs=True,
+        arguments=[],
+        image_pull_policy=image_pull_policy,
+        hostnetwork=True,
         log_events_on_failure=True,
-        env_vars=settings.env_vars()
+        do_xcom_push=True,
         # secrets=[settings.secrets(]
     )
 

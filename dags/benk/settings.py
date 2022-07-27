@@ -40,9 +40,3 @@ class Settings:
             for k in dir(self)
             if _is_env_var(k)
         ]
-
-    def secrets(self) -> List[Secret]:
-        """Returns all secrets in this object."""
-        return [
-            getattr(self, k) for k in dir(self) if isinstance(getattr(self, k), Secret)
-        ]
