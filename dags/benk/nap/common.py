@@ -5,7 +5,7 @@ default_args = {
     "owner": "basis en kernregistraties",
     "depends_on_past": False,
     "start_date": datetime.utcnow(),
-    "email": ["gob.ois@amsterdam.nl"],
+    "email": ["ois.gob@amsterdam.nl"],
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
