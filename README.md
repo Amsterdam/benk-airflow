@@ -32,7 +32,7 @@ All python code should be formatted with black. To do this run:
 ./format.sh
 ```
 
-## tests / Mypy / flake8
+## Tests / mypy / flake8
 
 Testing, type checking and format checks is done with `tests.sh`.
 Type checking is done with mypy.

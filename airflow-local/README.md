@@ -65,11 +65,21 @@ Open [localhost:8080](http://localhost:8080) in your browser and login with:
 
 ### Configure DAGS with variables
 
+#### Defaults
+
 These variables are suitable to run the dags locally.
 
 Configure variables in the [GUI](http://localhost:8080/variable/list/).
 
 Or, in that GUI, click import variables and load variables.json.
+
+#### Passwords / Secrets
+
+Passwords, obviously, cannot be distributed as a file. 
+
+Set passwords in the Airflow [GUI](http://localhost:8080/variable/list/).
+
+Environment values for secrets to be set can be found in [settings.py](../dags/benk/settings.py).
 
 ## Remove Airflow from Kubernetes
 This removes the entire Airflow namespace in Kubernetes.
