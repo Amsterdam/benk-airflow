@@ -1,5 +1,3 @@
-import textwrap
-
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
