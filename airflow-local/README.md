@@ -79,7 +79,7 @@ Passwords, obviously, cannot be distributed as a file.
 
 Set passwords in the Airflow [GUI](http://localhost:8080/variable/list/).
 
-Environment values for secrets to be set can be found in [settings.py](../dags/benk/settings.py).
+Environment values for secrets to be set can be found in [environment.py](../dags/benk/environment.py).
 
 ## Remove Airflow from Kubernetes
 This removes the entire Airflow namespace in Kubernetes.

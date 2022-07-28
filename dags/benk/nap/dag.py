@@ -5,7 +5,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 
 from benk.nap.common import default_args, get_image_url, get_image_pull_policy
-from benk.settings import Settings
+from benk.environment import GrondslagEnvironment
 
 team_name = "BenK"
 workload_name = "NAP"
@@ -27,7 +27,7 @@ container_image = get_image_url(
     registry_url=container_registry_url, image_name=image_name, tag=tag
 )
 image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
-settings = Settings()
+
 
 with DAG(
     dag_id,
@@ -48,7 +48,7 @@ with DAG(
             "nap",
             "peilmerken",
         ],
-        env_vars=settings.env_vars(),
+        env_vars=GrondslagEnvironment().env_vars(),
         labels={"team_name": team_name},
         in_cluster=True,
         get_logs=True,
