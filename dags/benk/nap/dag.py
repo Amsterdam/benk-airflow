@@ -1,66 +1,63 @@
 from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import \
-    KubernetesPodOperator
+from airflow.models import Variable
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+    KubernetesPodOperator,
+)
 
-from benk.bag.common import default_args
+from benk.nap.common import default_args, get_image_url, get_image_pull_policy
+from benk.environment import GrondslagEnvironment
 
 team_name = "BenK"
 workload_name = "NAP"
 dag_id = team_name + "_" + workload_name
-# TODO: Figure out in which environment this dag is running,
-#  or set an env var with the container_image url in the airflow UI.
-container_image = "benkontacr.azurecr.io/benk-airflow-task:development"
-command = ["/bin/sh", "-c", "/app/entrypoint.sh"]
+
+# Variables below in the GUI (http://localhost:8080/variable/list/), or leave
+# empty to use defaults.
+
+# The Kubernetes namespace, something like 'airflow-benkbbn1' on the server.
+namespace = Variable.get("AIRFLOW_POD_NAMESPACE", default_var="airflow")
+# URL to registry, leave empty to use local registry (development environment).
+container_registry_url = Variable.get("CONTAINER_REGISTRY_URL", default_var=None)
+image_name = Variable.get("GOB_IMPORT_IMAGE_NAME", default_var="gob_import")
+# In accept or test environments, different tags could be used. For example:
+# :develop or :test
+tag = Variable.get("GOB_IMPORT_IMAGE_TAG", default_var="latest")
+
+container_image = get_image_url(
+    registry_url=container_registry_url, image_name=image_name, tag=tag
+)
+image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
+
 
 with DAG(
     dag_id,
     default_args=default_args,
     template_searchpath=["/"],
 ) as dag:
-    nap_extract = KubernetesPodOperator(
-        task_id="NAP_extract",
-        namespace="airflow-benkbbn1",
-        image=container_image,
-        cmds=["python", "/app/benk/nap/extract.py"],
-        # arguments=arguments,
-        labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        get_logs=True,
-        hostnetwork=True,
-        in_cluster=True,
+    nap_import = KubernetesPodOperator(
         dag=dag,
-        log_events_on_failure=True
-    )
-    nap_transform = KubernetesPodOperator(
-        task_id="NAP_transform",
-        namespace="airflow-benkbbn1",
+        task_id=f"{workload_name}-import",
+        namespace=namespace,
         image=container_image,
-        cmds=command,
-        # arguments=arguments,
+        name=f"{workload_name}-import",
+        cmds=[
+            "python",
+            "-m",
+            "gobimport",
+            "import",
+            "nap",
+            "peilmerken",
+        ],
+        env_vars=GrondslagEnvironment().env_vars(),
         labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        get_logs=True,
-        hostnetwork=True,
         in_cluster=True,
-        dag=dag,
-        log_events_on_failure=True
-    )
-    nap_load = KubernetesPodOperator(
-        task_id="NAP_load",
-        namespace="airflow-benkbbn1",
-        image=container_image,
-        cmds=command,
-        # arguments=arguments,
-        labels={"team_name": team_name},
-        name=workload_name,
-        image_pull_policy="Always",
-        hostnetwork=True,
         get_logs=True,
-        in_cluster=True,
-        dag=dag,
-        log_events_on_failure=True
+        arguments=[],
+        image_pull_policy=image_pull_policy,
+        hostnetwork=True,
+        log_events_on_failure=True,
+        do_xcom_push=True,
+        # secrets=[settings.secrets(]
     )
 
-(nap_extract >> nap_transform >> nap_load)
+nap_import

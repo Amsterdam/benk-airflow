@@ -32,13 +32,19 @@ All python code should be formatted with black. To do this run:
 ./format.sh
 ```
 
-## Mypy/flake8
+## Tests / mypy / flake8
 
+Testing, type checking and format checks is done with `tests.sh`.
 Type checking is done with mypy.
-In addition to `format.sh`, checking of code style is done with flake8.
-
-Both commands are run with:
+After checking of code style is done with flake8 and black.
 
 ```shell
 ./test.sh
 ```
+
+# Production
+
+## Configure DAGS with variables
+
+Configure CONTAINER_REGISTRY_URL in the [GUI](https://airflow-benkbbn1.dave-o.azure.amsterdam.nl/variable/list/).
+

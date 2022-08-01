@@ -6,6 +6,11 @@ The `../dags/` directory is mounted in pods, so that changes to dags are immedia
 
 # Install Airflow in local Kubernetes
 
+## Prerequisites
+
+Requires docker to run on your development machine. 
+Images are pulled from your local registry, so it is best to build all GOB-* images first. 
+
 ## Kubernetes
 
 Enable Kubernetes in Docker Desktop:
@@ -58,6 +63,23 @@ Open [localhost:8080](http://localhost:8080) in your browser and login with:
 - username: `admin`
 - password: `admin`
 
+### Configure DAGS with variables
+
+#### Defaults
+
+These variables are suitable to run the dags locally.
+
+Configure variables in the [GUI](http://localhost:8080/variable/list/).
+
+Or, in that GUI, click import variables and load variables.json.
+
+#### Passwords / Secrets
+
+Passwords, obviously, cannot be distributed as a file. 
+
+Set passwords in the Airflow [GUI](http://localhost:8080/variable/list/).
+
+Environment values for secrets to be set can be found in [environment.py](../dags/benk/environment.py).
 
 ## Remove Airflow from Kubernetes
 This removes the entire Airflow namespace in Kubernetes.

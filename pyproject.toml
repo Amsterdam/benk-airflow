@@ -1,3 +1,7 @@
 [[tool.mypy.overrides]]
 module = "airflow.providers.cncf.kubernetes.operators.kubernetes_pod.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "kubernetes.client.*"
+ignore_missing_imports = true
