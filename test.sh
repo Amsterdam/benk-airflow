@@ -7,7 +7,7 @@ echo "Running mypy"
 mypy "${DAGS_PATH}"
 
 echo "Running tests"
-pytest tests/
+pytest -s tests/
 
 echo "Check if black finds no potential reformat fixes"
 black --check ${DAGS_PATH}

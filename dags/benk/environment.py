@@ -10,8 +10,9 @@ class OperatorEnvironment:
 
     TODO: Use 'Secret' object for passwords instead.
     """
+
     def env_vars(self) -> List[V1EnvVar]:
-        """Returns all env vars in this object."""
+        """Return all env vars in this object."""
 
         def _is_env_var(k) -> bool:
             if str(k).startswith("__"):
@@ -32,14 +33,10 @@ class OperatorEnvironment:
 class GrondslagEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    GRONDSLAG_DATABASE_HOST = Variable.get(
-        "GRONDSLAG_DATABASE_HOST", default_var="DBEXTA1LORA2.ACC.AMSTERDAM.NL"
-    )
+    GRONDSLAG_DATABASE_HOST = Variable.get("GRONDSLAG_DATABASE_HOST")
     GRONDSLAG_DATABASE_PASSWORD = Variable.get("GRONDSLAG_DATABASE_PASSWORD")
-    GRONDSLAG_DATABASE = Variable.get("GRONDSLAG_DATABASE", default_var="NAPGR1TA_APP")
+    GRONDSLAG_DATABASE = Variable.get("GRONDSLAG_DATABASE")
     GRONDSLAG_DATABASE_PORT = Variable.get(
         "GRONDSLAG_DATABASE_PORT", default_var="1521"
     )
-    GRONDSLAG_DATABASE_USER = Variable.get(
-        "GRONDSLAG_DATABASE_USER", default_var="grondslag_proxy"
-    )
+    GRONDSLAG_DATABASE_USER = Variable.get("GRONDSLAG_DATABASE_USER")

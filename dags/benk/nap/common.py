@@ -28,7 +28,7 @@ def get_image_url(registry_url: Optional[str], image_name: str, tag: str) -> str
 
 
 def get_image_pull_policy(registry_url: Optional[str]) -> str:
-    """Returns desired image pull policy.
+    """Return desired image pull policy.
 
     Docs:
         https://kubernetes.io/docs/concepts/containers/images/
