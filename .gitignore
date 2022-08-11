@@ -60,3 +60,4 @@ dmypy.json
 # Airflow
 logs/
 airflow.db
+airflow-local/shared-storage

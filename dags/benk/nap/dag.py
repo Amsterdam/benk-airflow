@@ -1,3 +1,7 @@
+"""Dag which imports NAP.
+
+Order of tasks is as it was defined in gob. See gobworkflow/workflow/config.py.
+"""
 import json
 
 from airflow import DAG
@@ -5,9 +9,11 @@ from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
+from kubernetes.client import V1VolumeMount, V1Volume, \
+    V1PersistentVolumeClaimVolumeSource
 
 from benk.nap.common import default_args, get_image_url, get_image_pull_policy
-from benk.environment import GrondslagEnvironment
+from benk.environment import GrondslagEnvironment, GOBEnvironment, GenericEnvironment
 
 team_name = "BenK"
 workload_name = "NAP"
@@ -40,9 +46,33 @@ upload_container_image = get_image_url(
 )
 
 
+# Where the "gob-volume"-volume is mounted in the pod.
+volume_mount = V1VolumeMount(
+    name='gob-volume', mount_path='/app/shared', sub_path=None, read_only=False
+)
+
+# Which claim gob-volume should use (my-claim)
+volume = V1Volume(
+    name='gob-volume',
+    persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(claim_name='my-claim'),
+)
+
+dag_default_args = {
+    "labels": {"team_name": team_name},
+    "in_cluster": True,
+    "get_logs": True,
+    "arguments": [],
+    "image_pull_policy": image_pull_policy,
+    "hostnetwork": True,
+    "log_events_on_failure": True,
+    "do_xcom_push": True,
+    "volumes": [volume],
+    "volume_mounts": [volume_mount]
+}
+
 with DAG(
     dag_id,
-    default_args=default_args,
+    default_args={**default_args, **dag_default_args},
     template_searchpath=["/"],
     user_defined_macros={
         "json": json
@@ -64,23 +94,18 @@ with DAG(
             "nap",
             "peilmerken",
         ],
-        env_vars=GrondslagEnvironment().env_vars(),
-        labels={"team_name": team_name},
-        in_cluster=True,
-        get_logs=True,
-        arguments=[],
-        image_pull_policy=image_pull_policy,
-        hostnetwork=True,
-        log_events_on_failure=True,
-        do_xcom_push=True,
-        # secrets=[settings.secrets(]
+        env_vars=GenericEnvironment().env_vars() + GrondslagEnvironment().env_vars(),
     )
-    nap_apply = KubernetesPodOperator(
+
+    # Are these generic tasks?
+    # When the current registration is not specified they are.
+    # In that case make it a separate dag and link it with TriggerDagRunOperator.
+    update_model = KubernetesPodOperator(
         dag=dag,
-        task_id=f"{workload_name}-upload",
+        task_id=f"update_model",
         namespace=namespace,
         image=upload_container_image,
-        name=f"{workload_name}-import",
+        name=f"{workload_name}-update_model",
         cmds=[
             "python",
             "-m",
@@ -90,16 +115,59 @@ with DAG(
             # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}"
         ],
-        env_vars=GrondslagEnvironment().env_vars(),
-        labels={"team_name": team_name},
-        in_cluster=True,
-        get_logs=True,
-        arguments=[],
-        image_pull_policy=image_pull_policy,
-        hostnetwork=True,
-        log_events_on_failure=True,
-        do_xcom_push=True,
-        # secrets=[settings.secrets(]
+        env_vars=GenericEnvironment().env_vars()
     )
 
-nap_import >> nap_apply
+    import_compare = KubernetesPodOperator(
+        dag=dag,
+        task_id=f"import_compare",
+        namespace=namespace,
+        image=upload_container_image,
+        name=f"{workload_name}-import_compare",
+        cmds=[
+            "python",
+            "-m",
+            "gobupload",
+            "compare",
+            "--xcom-data",
+            # convert dict back to json
+            "{{ json.dumps(task_instance.xcom_pull('update_model')) }}"
+        ],
+        env_vars=GenericEnvironment().env_vars()
+    )
+
+    import_upload = KubernetesPodOperator(
+        dag=dag,
+        task_id=f"import_upload",
+        namespace=namespace,
+        image=upload_container_image,
+        name=f"{workload_name}-import_upload",
+        cmds=[
+            "python",
+            "-m",
+            "gobupload",
+            "full_update",
+            "--xcom-data",
+            "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}"
+        ],
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
+    )
+
+    apply_events = KubernetesPodOperator(
+        dag=dag,
+        task_id=f"apply_events",
+        namespace=namespace,
+        image=upload_container_image,
+        name=f"{workload_name}-apply_events",
+        cmds=[
+            "python",
+            "-m",
+            "gobupload",
+            "apply",
+            "--xcom-data",
+            "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}"
+        ],
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
+    )
+
+nap_import >> update_model >> import_compare >> import_upload >> apply_events
