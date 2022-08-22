@@ -111,7 +111,7 @@ with DAG(
             "-m",
             "gobupload",
             "apply",
-            "--messsage-data",
+            "--message-data",
             # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}"
         ],
