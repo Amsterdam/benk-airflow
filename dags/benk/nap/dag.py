@@ -31,8 +31,8 @@ image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
 import_container_image = get_image_url(
     registry_url=container_registry_url,
     image_name=Variable.get("GOB_IMPORT_IMAGE_NAME", default_var="gob_import"),
-    # In accept or test environments, different tags could be used. For example:
-    # :develop or :test
+    # In accept or test environments, different tags could be used.
+    # For example :develop or :test
     tag=Variable.get("GOB_IMPORT_IMAGE_TAG", default_var="latest")
 )
 
@@ -40,8 +40,8 @@ import_container_image = get_image_url(
 upload_container_image = get_image_url(
     registry_url=container_registry_url,
     image_name=Variable.get("GOB_UPLOAD_IMAGE_NAME", default_var="gob_upload"),
-    # In accept or test environments, different tags could be used. For example:
-    # :develop or :test
+    # In accept or test environments, different tags could be used.
+    # For example :develop or :test
     tag=Variable.get("GOB_UPLOAD_IMAGE_TAG", default_var="latest")
 )
 
@@ -111,7 +111,7 @@ with DAG(
             "-m",
             "gobupload",
             "apply",
-            "--xcom-data",
+            "--messsage-data",
             # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}"
         ],
@@ -129,7 +129,7 @@ with DAG(
             "-m",
             "gobupload",
             "compare",
-            "--xcom-data",
+            "--message_data",
             # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('update_model')) }}"
         ],
@@ -147,7 +147,7 @@ with DAG(
             "-m",
             "gobupload",
             "full_update",
-            "--xcom-data",
+            "--message_data",
             "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}"
         ],
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
@@ -164,7 +164,7 @@ with DAG(
             "-m",
             "gobupload",
             "apply",
-            "--xcom-data",
+            "--message_data",
             "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}"
         ],
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),

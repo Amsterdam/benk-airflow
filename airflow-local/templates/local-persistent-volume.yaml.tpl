@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: my-local-storage
   local:
-    path: /Users/roelkramer/PycharmProjects/boa/benk-airflow/airflow-local/shared-storage
+    path: ##STORAGE_DIRECTORY##
   nodeAffinity:
     required:
       nodeSelectorTerms:
