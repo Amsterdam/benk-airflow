@@ -91,8 +91,10 @@ with DAG(
             "-m",
             "gobimport",
             "import",
-            "nap",
-            "peilmerken",
+            # --catalogue=test_catalogue --collection=test_entity --application=ADD
+            "--catalogue=nap",
+            "--collection=peilmerken",
+            "--mode=full"
         ],
         env_vars=GenericEnvironment().env_vars() + GrondslagEnvironment().env_vars(),
     )
@@ -110,10 +112,15 @@ with DAG(
             "python",
             "-m",
             "gobupload",
-            "apply",
             "--message-data",
             # convert dict back to json
-            "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}"
+            "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
+            # TODO: Pluck the path to the message from the xcom-data instead of whole message
+            # "--message-in-path",
+            # "{{ json.dumps(task_instance.xcom_pull('nap_import')['contents_ref']) }}",
+            "apply",
+            "--catalogue=nap",
+            "--collection=peilmerken",
         ],
         env_vars=GenericEnvironment().env_vars()
     )
@@ -128,10 +135,10 @@ with DAG(
             "python",
             "-m",
             "gobupload",
-            "compare",
-            "--message_data",
+            "--message-data",
             # convert dict back to json
-            "{{ json.dumps(task_instance.xcom_pull('update_model')) }}"
+            "{{ json.dumps(task_instance.xcom_pull('update_model')) }}",
+            "compare",
         ],
         env_vars=GenericEnvironment().env_vars()
     )
@@ -146,9 +153,9 @@ with DAG(
             "python",
             "-m",
             "gobupload",
+            "--message-data",
+            "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}",
             "full_update",
-            "--message_data",
-            "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}"
         ],
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
     )
@@ -163,9 +170,11 @@ with DAG(
             "python",
             "-m",
             "gobupload",
+            # "--message-data",
+            # "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}"
             "apply",
-            "--message_data",
-            "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}"
+            "--catalogue=nap"
+            "--collection=peilmerken"
         ],
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
