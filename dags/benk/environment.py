@@ -32,17 +32,16 @@ class OperatorEnvironment:
 
 class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers"""
-    GOB_SHARED_DIR = "/app/shared"
+    GOB_SHARED_DIR = Variable.get("GOB_SHARED_DIR", "/app/shared")
 
 
 class GOBEnvironment(OperatorEnvironment):
     """Settings to connect to connect to the GOB database."""
-    # type = TYPE_POSTGRES required?
-    username = Variable.get("GOB_DATABASE_USER", "gob")
-    database = Variable.get("GOB_DATABASE_NAME", "gob")
-    password = Variable.get("GOB_DATABASE_PASSWORD")
-    host = Variable.get("GOB_DATABASE_HOST_OVERRIDE", "host.docker.internal")
-    port = Variable.get("GOB_DATABASE_PORT_OVERRIDE", "5406")
+    GOB_DATABASE_USER = Variable.get("GOB_DATABASE_USER", "gob")
+    GOB_DATABASE_NAME = Variable.get("GOB_DATABASE_NAME", "gob")
+    GOB_DATABASE_PASSWORD = Variable.get("GOB_DATABASE_PASSWORD")
+    GOB_DATABASE_HOST_OVERRIDE = Variable.get("GOB_DATABASE_HOST_OVERRIDE", "host.docker.internal")
+    GOB_DATABASE_PORT_OVERRIDE = Variable.get("GOB_DATABASE_PORT_OVERRIDE", "5406")
 
 
 class GrondslagEnvironment(OperatorEnvironment):

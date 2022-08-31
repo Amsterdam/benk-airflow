@@ -48,7 +48,10 @@ upload_container_image = get_image_url(
 
 # Where the "gob-volume"-volume is mounted in the pod.
 volume_mount = V1VolumeMount(
-    name='gob-volume', mount_path='/app/shared', sub_path=None, read_only=False
+    name='gob-volume',
+    mount_path='/app/shared',
+    sub_path=None,
+    read_only=False
 )
 
 # Which claim gob-volume should use (my-claim)
@@ -84,7 +87,6 @@ with DAG(
         task_id=f"nap_import",
         namespace=namespace,
         image=import_container_image,
-        # name=f"{workload_name}-import",
         name=f"nap_import",
         cmds=[
             "python",
@@ -115,12 +117,7 @@ with DAG(
             "--message-data",
             # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
-            # TODO: Pluck the path to the message from the xcom-data instead of whole message
-            # "--message-in-path",
-            # "{{ json.dumps(task_instance.xcom_pull('nap_import')['contents_ref']) }}",
             "apply",
-            "--catalogue=nap",
-            "--collection=peilmerken",
         ],
         env_vars=GenericEnvironment().env_vars()
     )
@@ -170,11 +167,9 @@ with DAG(
             "python",
             "-m",
             "gobupload",
-            # "--message-data",
-            # "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}"
+            "--message-data",
+            "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}",
             "apply",
-            "--catalogue=nap"
-            "--collection=peilmerken"
         ],
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
