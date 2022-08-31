@@ -54,10 +54,10 @@ volume_mount = V1VolumeMount(
     read_only=False
 )
 
-# Which claim gob-volume should use (my-claim)
+# Which claim gob-volume should use (shared-storage-claim)
 volume = V1Volume(
     name='gob-volume',
-    persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(claim_name='my-claim'),
+    persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(claim_name='shared-storage-claim'),
 )
 
 dag_default_args = {

@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: my-local-pv
+  name: shared-storage-pv
 spec:
   capacity:
     storage: 10Gi
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: my-local-storage
+  storageClassName: shared-storage
   local:
     path: ##STORAGE_DIRECTORY##
   nodeAffinity:

@@ -48,7 +48,7 @@ echo "${TPL_VOLUME_RENDERED}" | kubectl apply --namespace ${NAMESPACE} -f -
 kubectl apply --namespace ${NAMESPACE} -f "${SCRIPT_DIR}/templates/volume-claim.yaml"
 
 # Create volumes shared between PodOperators. Unlike the previous volume, this
-# uses a StorageClass. In development the StorageClass my-local-storage uses
+# uses a StorageClass. In development the StorageClass shared-storage uses
 # the node's host filesystem. In azure another StorageClass will be used, which
 # mounts an Azure Storage Account.
 mkdir -p "${STORAGE_DIR}"
