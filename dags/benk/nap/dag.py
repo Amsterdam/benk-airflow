@@ -23,26 +23,26 @@ dag_id = team_name + "_" + workload_name
 # or leave empty to use defaults when available.
 
 # The Kubernetes namespace, something like 'airflow-benkbbn1' on the server.
-namespace = Variable.get("AIRFLOW_POD_NAMESPACE", default_var="airflow")
+namespace = Variable.get("AIRFLOW-POD-NAMESPACE", default_var="airflow")
 # URL to registry, leave empty to use local registry (development environment).
-container_registry_url = Variable.get("CONTAINER_REGISTRY_URL", default_var=None)
+container_registry_url = Variable.get("CONTAINER-REGISTRY-URL", default_var=None)
 image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
 
 import_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("GOB_IMPORT_IMAGE_NAME", default_var="gob_import"),
+    image_name=Variable.get("GOB-IMPORT-IMAGE-NAME", default_var="gob_import"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB_IMPORT_IMAGE_TAG", default_var="latest")
+    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest")
 )
 
 
 upload_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("GOB_UPLOAD_IMAGE_NAME", default_var="gob_upload"),
+    image_name=Variable.get("GOB-UPLOAD-IMAGE-NAME", default_var="gob_upload"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB_UPLOAD_IMAGE_TAG", default_var="latest")
+    tag=Variable.get("GOB-UPLOAD-IMAGE-TAG", default_var="latest")
 )
 
 
@@ -57,7 +57,9 @@ volume_mount = V1VolumeMount(
 # Which claim gob-volume should use (shared-storage-claim)
 volume = V1Volume(
     name='gob-volume',
-    persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(claim_name='shared-storage-claim'),
+    persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(
+        claim_name=Variable.get("GOB-SHARED-STORAGE-CLAIM", "shared-storage-claim")
+    ),
 )
 
 dag_default_args = {
@@ -114,10 +116,12 @@ with DAG(
             "python",
             "-m",
             "gobupload",
-            "--message-data",
+            # "--message-data",
             # convert dict back to json
-            "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
+            # "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "apply",
+            "--catalogue=nap",
+            "--collection=peilmerken",
         ],
         env_vars=GenericEnvironment().env_vars()
     )
@@ -134,7 +138,7 @@ with DAG(
             "gobupload",
             "--message-data",
             # convert dict back to json
-            "{{ json.dumps(task_instance.xcom_pull('update_model')) }}",
+            "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "compare",
         ],
         env_vars=GenericEnvironment().env_vars()
