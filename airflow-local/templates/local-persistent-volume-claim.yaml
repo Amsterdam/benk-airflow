@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: shared-storage-claim
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: shared-storage
+  resources:
+    requests:
+      storage: 10Gi
