@@ -42,9 +42,21 @@ After checking of code style is done with flake8 and black.
 ./test.sh
 ```
 
-# Production
+# Airflow on Azure
 
 ## Configure DAGS with variables
 
-Configure CONTAINER_REGISTRY_URL in the [GUI](https://airflow-benkbbn1.dave-o.azure.amsterdam.nl/variable/list/).
+Configure variables in the [GUI](https://airflow-benkbbn1.dave-o.azure.amsterdam.nl/variable/list/).
+Configure secrets with the secrets pipeline.
 
+Various variables need to be set.
+Find variables in 'environment.py' in the dags directory.
+Note that some configuration are variables and some are secrets.
+Secrets need to be put in a keyvault, either in benk's or in dave's subscription.
+
+Some important keys:
+- AIRFLOW-POD-NAMESPACE: Namespace where airflow runs in DaVe's k8s cluster.
+- CONTAINER-REGISTRY-URL: Url of registry of ACR in azure.
+- GOB-IMPORT/UPLOAD-IMAGE-TAG: develop, or another branch name.
+- GOB-IMPORT/UPLOAD-IMAGE-NAME: datapunt/gob_import, datapunt/gob_upload.
+- GOB-SHARED-STORAGE-CLAIM: name of shared storage claim as given bij DaVe.
