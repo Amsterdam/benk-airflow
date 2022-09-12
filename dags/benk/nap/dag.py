@@ -12,7 +12,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 from kubernetes.client import V1VolumeMount, V1Volume, \
     V1PersistentVolumeClaimVolumeSource
 
-from benk.nap.common import default_args, get_image_url, get_image_pull_policy
+from benk.common import default_args, get_image_url, get_image_pull_policy
 from benk.environment import GrondslagEnvironment, GOBEnvironment, GenericEnvironment
 
 team_name = "BenK"
@@ -74,6 +74,8 @@ dag_default_args = {
     "volumes": [volume],
     "volume_mounts": [volume_mount]
 }
+
+Variable.get("pizza")
 
 with DAG(
     dag_id,
