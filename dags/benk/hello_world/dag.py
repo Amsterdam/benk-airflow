@@ -57,7 +57,6 @@ dag_default_args = {
     "image_pull_policy": image_pull_policy,
     "hostnetwork": True,
     "log_events_on_failure": True,
-    "do_xcom_push": True,
     "volumes": [volume],
     "volume_mounts": [volume_mount]
 }
@@ -72,11 +71,10 @@ with DAG(
 ) as dag:
     hello_world = KubernetesPodOperator(
         dag=dag,
-        # task_id=f"{workload_name}-import",
-        task_id=f"nap_import",
+        task_id=f"hello_world",
         namespace=namespace,
         image=import_container_image,
-        name=f"nap_import",
+        name=f"hello_world",
         cmds=[
             "echo", "Hello world!"
         ],
