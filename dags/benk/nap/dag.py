@@ -75,8 +75,6 @@ dag_default_args = {
     "volume_mounts": [volume_mount]
 }
 
-Variable.get("pizza")
-
 with DAG(
     dag_id,
     default_args={**default_args, **dag_default_args},
