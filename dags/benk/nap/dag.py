@@ -123,7 +123,7 @@ with DAG(
             "--catalogue=nap",
             "--collection=peilmerken",
         ],
-        env_vars=GenericEnvironment().env_vars()
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
     )
 
     import_compare = KubernetesPodOperator(
@@ -141,7 +141,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "compare",
         ],
-        env_vars=GenericEnvironment().env_vars()
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
     )
 
     import_upload = KubernetesPodOperator(
