@@ -36,12 +36,17 @@ class GenericEnvironment(OperatorEnvironment):
 
 
 class GOBEnvironment(OperatorEnvironment):
-    """Settings to connect to connect to the GOB database."""
-    GOB_DATABASE_USER = Variable.get("GOB-DATABASE-USER", "gob")
-    GOB_DATABASE_NAME = Variable.get("GOB-DATABASE-NAME", "gob")
-    GOB_DATABASE_PASSWORD = Variable.get("GOB-DATABASE-PASSWORD")
-    GOB_DATABASE_HOST_OVERRIDE = Variable.get("GOB-DATABASE-HOST-OVERRIDE", "host.docker.internal")
-    GOB_DATABASE_PORT_OVERRIDE = Variable.get("GOB-DATABASE-PORT-OVERRIDE", "5406")
+    """Settings to connect to connect to the GOB database.
+
+    Note: this provides env vars for the dict 'GOB_DB' in config.py in
+    gobupload and not in gobconfig. Gobconfig uses GOB_DATABASE_* as env var
+    names, instead of DATABASE_*.
+    """
+    DATABASE_USER = Variable.get("DATABASE-USER", "gob")
+    DATABASE_NAME = Variable.get("DATABASE-NAME", "gob")
+    DATABASE_PASSWORD = Variable.get("DATABASE-PASSWORD")
+    DATABASE_HOST_OVERRIDE = Variable.get("DATABASE-HOST-OVERRIDE", "host.docker.internal")
+    DATABASE_PORT_OVERRIDE = Variable.get("DATABASE-PORT-OVERRIDE", "5406")
 
 
 class GrondslagEnvironment(OperatorEnvironment):
