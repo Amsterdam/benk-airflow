@@ -103,7 +103,7 @@ with DAG(
     # Are these generic tasks?
     # When the current registration is not specified they are.
     # In that case make it a separate dag and link it with TriggerDagRunOperator.
-    update_model = KubernetesPodOperator(
+    migrate_database = KubernetesPodOperator(
         dag=dag,
         task_id=f"update_model",
         namespace=namespace,
@@ -190,4 +190,4 @@ with DAG(
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
-nap_import >> update_model >> import_compare >> import_upload >> apply_events
+nap_import >> migrate_database >> update_model >> import_compare >> import_upload >> apply_events
