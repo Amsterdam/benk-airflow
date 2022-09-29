@@ -105,10 +105,10 @@ with DAG(
     # In that case make it a separate dag and link it with TriggerDagRunOperator.
     migrate_database = KubernetesPodOperator(
         dag=dag,
-        task_id=f"update_model",
+        task_id=f"migrate_database",
         namespace=namespace,
         image=upload_container_image,
-        name=f"{workload_name}-update_model",
+        name=f"{workload_name}-migrate_database",
         cmds=[
             "python",
             "-m",
