@@ -9,8 +9,11 @@ from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-from kubernetes.client import V1VolumeMount, V1Volume, \
-    V1PersistentVolumeClaimVolumeSource
+from kubernetes.client import (
+    V1VolumeMount,
+    V1Volume,
+    V1PersistentVolumeClaimVolumeSource,
+)
 
 from benk.common import default_args, get_image_url, get_image_pull_policy
 from benk.environment import GrondslagEnvironment, GOBEnvironment, GenericEnvironment
@@ -33,7 +36,7 @@ import_container_image = get_image_url(
     image_name=Variable.get("GOB-IMPORT-IMAGE-NAME", default_var="gob_import"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest")
+    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest"),
 )
 
 
@@ -42,21 +45,18 @@ upload_container_image = get_image_url(
     image_name=Variable.get("GOB-UPLOAD-IMAGE-NAME", default_var="gob_upload"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB-UPLOAD-IMAGE-TAG", default_var="latest")
+    tag=Variable.get("GOB-UPLOAD-IMAGE-TAG", default_var="latest"),
 )
 
 
 # Where the "gob-volume"-volume is mounted in the pod.
 volume_mount = V1VolumeMount(
-    name='gob-volume',
-    mount_path='/app/shared',
-    sub_path=None,
-    read_only=False
+    name="gob-volume", mount_path="/app/shared", sub_path=None, read_only=False
 )
 
 # Which claim gob-volume should use (shared-storage-claim)
 volume = V1Volume(
-    name='gob-volume',
+    name="gob-volume",
     persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(
         claim_name=Variable.get("GOB-SHARED-STORAGE-CLAIM", "shared-storage-claim")
     ),
@@ -72,16 +72,14 @@ dag_default_args = {
     "log_events_on_failure": True,
     "do_xcom_push": True,
     "volumes": [volume],
-    "volume_mounts": [volume_mount]
+    "volume_mounts": [volume_mount],
 }
 
 with DAG(
     dag_id,
     default_args={**default_args, **dag_default_args},
     template_searchpath=["/"],
-    user_defined_macros={
-        "json": json
-    }
+    user_defined_macros={"json": json},
 ) as dag:
     nap_import = KubernetesPodOperator(
         dag=dag,
@@ -95,10 +93,9 @@ with DAG(
             "-m",
             "gobimport",
             "import",
-            # --catalogue=test_catalogue --collection=test_entity --application=ADD
             "--catalogue=nap",
             "--collection=peilmerken",
-            "--mode=full"
+            "--mode=full",
         ],
         env_vars=GenericEnvironment().env_vars() + GrondslagEnvironment().env_vars(),
     )
@@ -116,6 +113,21 @@ with DAG(
             "python",
             "-m",
             "gobupload",
+            "migrate",
+        ],
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
+    )
+
+    update_model = KubernetesPodOperator(
+        dag=dag,
+        task_id=f"update_model",
+        namespace=namespace,
+        image=upload_container_image,
+        name=f"{workload_name}-update_model",
+        cmds=[
+            "python",
+            "-m",
+            "gobupload",
             # "--message-data",
             # convert dict back to json
             # "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
@@ -123,7 +135,7 @@ with DAG(
             "--catalogue=nap",
             "--collection=peilmerken",
         ],
-        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     import_compare = KubernetesPodOperator(
@@ -141,7 +153,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "compare",
         ],
-        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     import_upload = KubernetesPodOperator(
@@ -158,7 +170,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}",
             "full_update",
         ],
-        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars()
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     apply_events = KubernetesPodOperator(

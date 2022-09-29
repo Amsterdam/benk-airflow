@@ -6,8 +6,11 @@ from airflow.models import Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-from kubernetes.client import V1VolumeMount, V1Volume, \
-    V1PersistentVolumeClaimVolumeSource
+from kubernetes.client import (
+    V1VolumeMount,
+    V1Volume,
+    V1PersistentVolumeClaimVolumeSource,
+)
 
 from benk.common import default_args, get_image_url, get_image_pull_policy
 
@@ -29,21 +32,18 @@ import_container_image = get_image_url(
     image_name=Variable.get("GOB-IMPORT-IMAGE-NAME", default_var="gob_import"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest")
+    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest"),
 )
 
 
 # Where the "gob-volume"-volume is mounted in the pod.
 volume_mount = V1VolumeMount(
-    name='gob-volume',
-    mount_path='/app/shared',
-    sub_path=None,
-    read_only=False
+    name="gob-volume", mount_path="/app/shared", sub_path=None, read_only=False
 )
 
 # Which claim gob-volume should use (shared-storage-claim)
 volume = V1Volume(
-    name='gob-volume',
+    name="gob-volume",
     persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(
         claim_name=Variable.get("GOB-SHARED-STORAGE-CLAIM", "shared-storage-claim")
     ),
@@ -58,16 +58,14 @@ dag_default_args = {
     "hostnetwork": True,
     "log_events_on_failure": True,
     "volumes": [volume],
-    "volume_mounts": [volume_mount]
+    "volume_mounts": [volume_mount],
 }
 
 with DAG(
     dag_id,
     default_args={**default_args, **dag_default_args},
     template_searchpath=["/"],
-    user_defined_macros={
-        "json": json
-    }
+    user_defined_macros={"json": json},
 ) as dag:
     hello_world = KubernetesPodOperator(
         dag=dag,
@@ -75,9 +73,7 @@ with DAG(
         namespace=namespace,
         image=import_container_image,
         name=f"hello_world",
-        cmds=[
-            "echo", "Hello world!"
-        ],
+        cmds=["echo", "Hello world!"],
     )
 
 hello_world

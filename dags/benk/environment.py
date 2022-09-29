@@ -32,6 +32,7 @@ class OperatorEnvironment:
 
 class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers"""
+
     GOB_SHARED_DIR = Variable.get("GOB-SHARED-DIR", "/app/shared")
 
 
@@ -42,10 +43,13 @@ class GOBEnvironment(OperatorEnvironment):
     gobupload and not in gobconfig. Gobconfig uses GOB_DATABASE_* as env var
     names, instead of DATABASE_*.
     """
+
     DATABASE_USER = Variable.get("DATABASE-USER", "gob")
     DATABASE_NAME = Variable.get("DATABASE-NAME", "gob")
     DATABASE_PASSWORD = Variable.get("DATABASE-PASSWORD")
-    DATABASE_HOST_OVERRIDE = Variable.get("DATABASE-HOST-OVERRIDE", "host.docker.internal")
+    DATABASE_HOST_OVERRIDE = Variable.get(
+        "DATABASE-HOST-OVERRIDE", "host.docker.internal"
+    )
     DATABASE_PORT_OVERRIDE = Variable.get("DATABASE-PORT-OVERRIDE", "5406")
 
 
