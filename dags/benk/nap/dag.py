@@ -66,6 +66,7 @@ dag_default_args = {
     "labels": {"team_name": team_name},
     "in_cluster": True,
     "get_logs": True,
+    "catchup": False,
     "arguments": [],
     "image_pull_policy": image_pull_policy,
     "hostnetwork": True,
