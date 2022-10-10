@@ -18,14 +18,17 @@ class EnvVariable(Variable):
     def get(
         cls,
         key: str,
-        default_var: Any = Variable.__NO_DEFAULT_SENTINEL,
+        default_var: Any = None,
         deserialize_json: bool = False,
         version: str = None
     ) -> Any:
         if secret := getattr(cls.keyvault.get_secret(key, version), "value", ""):
             return secret
 
-        super().get(key, default_var, deserialize_json)
+        if default_var is not None:
+            return super().get(key, default_var, deserialize_json)
+        else:
+            return super().get(key, deserialize_json=deserialize_json)
 
 
 class OperatorEnvironment:
