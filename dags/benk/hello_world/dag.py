@@ -1,5 +1,6 @@
 """Very simple dag to test infra functionality."""
 import json
+from datetime import datetime
 
 from airflow import DAG
 from airflow.models import Variable
@@ -66,6 +67,10 @@ with DAG(
     default_args={**default_args, **dag_default_args},
     template_searchpath=["/"],
     user_defined_macros={"json": json},
+    schedule_interval=None,
+    catchup=False,
+    start_date=datetime.utcnow(),
+    tags=["hello", "world"]
 ) as dag:
     hello_world = KubernetesPodOperator(
         dag=dag,
