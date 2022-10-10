@@ -11,3 +11,8 @@ dags:
     accessMode: ReadWriteOnce
     ## the name of an existing PVC to use
     existingClaim: dag-source-dir-claim
+
+images:
+  airflow:
+    # default is python3.7
+    tag: 2.3.4-python3.9
