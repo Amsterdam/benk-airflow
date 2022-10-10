@@ -84,7 +84,6 @@ with DAG(
 ) as dag:
     nap_import = KubernetesPodOperator(
         dag=dag,
-        # task_id=f"{workload_name}-import",
         task_id=f"nap_import",
         namespace=namespace,
         image=import_container_image,
@@ -101,24 +100,6 @@ with DAG(
         env_vars=GenericEnvironment().env_vars() + GrondslagEnvironment().env_vars(),
     )
 
-    # Are these generic tasks?
-    # When the current registration is not specified they are.
-    # In that case make it a separate dag and link it with TriggerDagRunOperator.
-    migrate_database = KubernetesPodOperator(
-        dag=dag,
-        task_id=f"migrate_database",
-        namespace=namespace,
-        image=upload_container_image,
-        name=f"{workload_name}-migrate_database",
-        cmds=[
-            "python",
-            "-m",
-            "gobupload",
-            "migrate",
-        ],
-        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
-    )
-
     update_model = KubernetesPodOperator(
         dag=dag,
         task_id=f"update_model",
@@ -129,9 +110,6 @@ with DAG(
             "python",
             "-m",
             "gobupload",
-            # "--message-data",
-            # convert dict back to json
-            # "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "apply",
             "--catalogue=nap",
             "--collection=peilmerken",
@@ -191,4 +169,4 @@ with DAG(
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
-nap_import >> migrate_database >> update_model >> import_compare >> import_upload >> apply_events
+nap_import >> update_model >> import_compare >> import_upload >> apply_events
