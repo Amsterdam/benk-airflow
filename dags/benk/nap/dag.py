@@ -71,6 +71,7 @@ dag_default_args = {
     "image_pull_policy": image_pull_policy,
     "hostnetwork": True,
     "log_events_on_failure": True,
+    "reattach_on_restart": False,
     "do_xcom_push": True,
     "volumes": [volume],
     "volume_mounts": [volume_mount],
