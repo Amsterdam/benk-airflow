@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Optional
 
 default_args = {
     "owner": "basis en kernregistraties",
     "depends_on_past": False,
-    "start_date": datetime.utcnow(),
     "email": ["ois.gob@amsterdam.nl"],
     "email_on_failure": False,
     "email_on_retry": False,

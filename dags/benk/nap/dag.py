@@ -3,6 +3,7 @@
 Order of tasks is as it was defined in gob. See gobworkflow/workflow/config.py.
 """
 import json
+from datetime import datetime
 
 from airflow import DAG
 from airflow.models import Variable
@@ -62,11 +63,10 @@ volume = V1Volume(
     ),
 )
 
-dag_default_args = {
+operator_default_args = {
     "labels": {"team_name": team_name},
     "in_cluster": True,
     "get_logs": True,
-    "catchup": False,
     "arguments": [],
     "image_pull_policy": image_pull_policy,
     "hostnetwork": True,
@@ -79,9 +79,13 @@ dag_default_args = {
 
 with DAG(
     dag_id,
-    default_args={**default_args, **dag_default_args},
+    default_args={**default_args, **operator_default_args},
     template_searchpath=["/"],
     user_defined_macros={"json": json},
+    tags=["import", "apply", "compare"],
+    schedule_interval=None,
+    catchup=False,
+    start_date=datetime.utcnow()
 ) as dag:
     nap_import = KubernetesPodOperator(
         dag=dag,
