@@ -17,7 +17,7 @@ from kubernetes.client import (
 )
 
 from benk.common import default_args, get_image_url, get_image_pull_policy
-from benk.environment import ImportEnvironment, GobDbEnvironment
+from benk.environment import GrondslagEnvironment, GOBEnvironment, GenericEnvironment
 
 team_name = "BenK"
 workload_name = "NAP"
@@ -77,10 +77,6 @@ operator_default_args = {
     "volume_mounts": [volume_mount],
 }
 
-ImportVars = ImportEnvironment()
-GobDbVars = GobDbEnvironment()
-
-
 with DAG(
     dag_id,
     default_args={**default_args, **operator_default_args},
@@ -106,7 +102,7 @@ with DAG(
             "--collection=peilmerken",
             "--mode=full",
         ],
-        env_vars=ImportVars.env_vars()
+        env_vars=GenericEnvironment().env_vars() + GrondslagEnvironment().env_vars(),
     )
 
     update_model = KubernetesPodOperator(
@@ -123,7 +119,7 @@ with DAG(
             "--catalogue=nap",
             "--collection=peilmerken",
         ],
-        env_vars=GobDbVars.env_vars(),
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     import_compare = KubernetesPodOperator(
@@ -141,7 +137,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "compare",
         ],
-        env_vars=GobDbVars.env_vars(),
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     import_upload = KubernetesPodOperator(
@@ -158,7 +154,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}",
             "full_update",
         ],
-        env_vars=GobDbVars.env_vars(),
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
     apply_events = KubernetesPodOperator(
@@ -175,7 +171,7 @@ with DAG(
             "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}",
             "apply",
         ],
-        env_vars=GobDbVars.env_vars(),
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
 nap_import >> update_model >> import_compare >> import_upload >> apply_events

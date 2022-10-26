@@ -1,78 +1,62 @@
-import dataclasses
-from dataclasses import dataclass
-from typing import Any
+from typing import List
 
-from airflow.models import Variable as AirflowVar
-from azure.identity import ManagedIdentityCredential
-from azure.keyvault.secrets import SecretClient
+from airflow.kubernetes.secret import Secret
+from airflow.models import Variable
 from kubernetes.client import V1EnvVar
 
 
-class EnvVar:
+class OperatorEnvironment:
+    """Base environment class to put environment variables on.
 
-    keyvault = SecretClient(
-        vault_url=AirflowVar.get("BENK_KEYVAULT_URL"),
-        credential=ManagedIdentityCredential(client_id=AirflowVar.get("BENK_AIRFLOW_CLIENTID"))
-    )
+    TODO: Use 'Secret' object for passwords instead.
+    """
 
-    def __init__(self, name: str, default_value: Any = None):
-        self.name = name
-        self.default_value = default_value
+    def env_vars(self) -> List[V1EnvVar]:
+        """Return all env vars in this object."""
 
-    def get(self) -> Any:
-        if secret := getattr(self.keyvault.get_secret(self.name), "value", ""):
-            return secret
+        def _is_env_var(k) -> bool:
+            if str(k).startswith("__"):
+                return False
+            if isinstance(getattr(self, k), Secret):
+                return False
+            if callable(getattr(self, k)):
+                return False
+            return True
 
-        return AirflowVar.get(self.name) if self.default_value is None \
-            else AirflowVar.get(self.name, self.default_value)
+        return [
+            V1EnvVar(name=k, value=getattr(self, k))
+            for k in dir(self)
+            if _is_env_var(k)
+        ]
 
-    def to_envvar(self, secret: Any) -> V1EnvVar:
-        return V1EnvVar(name=secret, value=self.get())
 
-
-@dataclass(frozen=True)
-class GenericEnvironment:
+class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers"""
 
-    GOB_SHARED_DIR = EnvVar("GOB-SHARED-DIR", "/app/shared")
-
-    def env_vars(self) -> list[V1EnvVar]:
-        return [env_var.to_envvar(secret) for secret, env_var in dataclasses.asdict(self).items()]
+    GOB_SHARED_DIR = Variable.get("GOB-SHARED-DIR", "/app/shared")
 
 
-@dataclass(frozen=True)
-class GOBEnvironment:
+class GOBEnvironment(OperatorEnvironment):
     """Settings to connect to connect to the GOB database.
 
     Note: this provides env vars for the dict 'GOB_DB' in config.py in
     gobupload and not in gobconfig. Gobconfig uses GOB_DATABASE_* as env var
     names, instead of DATABASE_*.
     """
-    DATABASE_USER = EnvVar("DATABASE-USER", "gob")
-    DATABASE_NAME = EnvVar("DATABASE-NAME", "gob")
-    DATABASE_PASSWORD = EnvVar("DATABASE-PASSWORD")
-    DATABASE_HOST_OVERRIDE = EnvVar(
+    DATABASE_USER = Variable.get("DATABASE-USER", "gob")
+    DATABASE_NAME = Variable.get("DATABASE-NAME", "gob")
+    DATABASE_PASSWORD = Variable.get("DATABASE-PASSWORD")
+    DATABASE_HOST_OVERRIDE = Variable.get(
         "DATABASE-HOST-OVERRIDE", "host.docker.internal"
     )
-    DATABASE_PORT_OVERRIDE = EnvVar("DATABASE-PORT-OVERRIDE", "5406")
+    DATABASE_PORT_OVERRIDE = Variable.get("DATABASE-PORT-OVERRIDE", "5406")
 
 
-@dataclass(frozen=True)
-class GrondslagEnvironment:
+class GrondslagEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    GRONDSLAG_DATABASE_HOST = EnvVar("GRONDSLAG-DATABASE-HOST")
-    GRONDSLAG_DATABASE_PASSWORD = EnvVar("GRONDSLAG-DATABASE-PASSWORD")
-    GRONDSLAG_DATABASE = EnvVar("GRONDSLAG-DATABASE")
-    GRONDSLAG_DATABASE_PORT = EnvVar("GRONDSLAG-DATABASE-PORT", "1521")
-    GRONDSLAG_DATABASE_USER = EnvVar("GRONDSLAG-DATABASE-USER")
-
-
-@dataclass(frozen=True)
-class ImportEnvironment(GenericEnvironment, GrondslagEnvironment):
-    pass
-
-
-@dataclass(frozen=True)
-class GobDbEnvironment(GenericEnvironment, GOBEnvironment):
-    pass
+    GRONDSLAG_DATABASE_HOST = Variable.get("GRONDSLAG-DATABASE-HOST")
+    GRONDSLAG_DATABASE_PASSWORD = Variable.get("GRONDSLAG-DATABASE-PASSWORD")
+    GRONDSLAG_DATABASE = Variable.get("GRONDSLAG-DATABASE")
+    GRONDSLAG_DATABASE_PORT = Variable.get("GRONDSLAG-DATABASE-PORT", "1521")
+    GRONDSLAG_DATABASE_USER = Variable.get("GRONDSLAG-DATABASE-USER")
