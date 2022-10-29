@@ -43,20 +43,20 @@ class GOBEnvironment(OperatorEnvironment):
     gobupload and not in gobconfig. Gobconfig uses GOB_DATABASE_* as env var
     names, instead of DATABASE_*.
     """
-    DATABASE_USER = Variable.get("DATABASE-USER", "gob")
-    DATABASE_NAME = Variable.get("DATABASE-NAME", "gob")
-    DATABASE_PASSWORD = Variable.get("DATABASE-PASSWORD")
+    DATABASE_USER = Variable.get("gob-database-user", "gob")
+    DATABASE_NAME = Variable.get("gob-database-name", "gob")
+    DATABASE_PASSWORD = Variable.get("gob-database-password")
     DATABASE_HOST_OVERRIDE = Variable.get(
-        "DATABASE-HOST-OVERRIDE", "host.docker.internal"
+        "gob-database-host-override", "host.docker.internal"
     )
-    DATABASE_PORT_OVERRIDE = Variable.get("DATABASE-PORT-OVERRIDE", "5406")
+    DATABASE_PORT_OVERRIDE = Variable.get("gob-database-port-override", "5406")
 
 
 class GrondslagEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    GRONDSLAG_DATABASE_HOST = Variable.get("GRONDSLAG-DATABASE-HOST")
-    GRONDSLAG_DATABASE_PASSWORD = Variable.get("GRONDSLAG-DATABASE-PASSWORD")
-    GRONDSLAG_DATABASE = Variable.get("GRONDSLAG-DATABASE")
-    GRONDSLAG_DATABASE_PORT = Variable.get("GRONDSLAG-DATABASE-PORT", "1521")
-    GRONDSLAG_DATABASE_USER = Variable.get("GRONDSLAG-DATABASE-USER")
+    GRONDSLAG_DATABASE_HOST = Variable.get("grondslag-host")
+    GRONDSLAG_DATABASE_PASSWORD = Variable.get("grondslag-pw")
+    GRONDSLAG_DATABASE = Variable.get("grondslag-db")
+    GRONDSLAG_DATABASE_PORT = Variable.get("grondslag-port", "1521")
+    GRONDSLAG_DATABASE_USER = Variable.get("grondslag-user")

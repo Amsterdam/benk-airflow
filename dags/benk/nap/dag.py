@@ -27,26 +27,26 @@ dag_id = team_name + "_" + workload_name
 # or leave empty to use defaults when available.
 
 # The Kubernetes namespace, something like 'airflow-benkbbn1' on the server.
-namespace = Variable.get("AIRFLOW-POD-NAMESPACE", default_var="airflow")
+namespace = Variable.get("pod-namespace", default_var="airflow")
 # URL to registry, leave empty to use local registry (development environment).
-container_registry_url = Variable.get("CONTAINER-REGISTRY-URL", default_var=None)
+container_registry_url = Variable.get("pod-container-registry-url", default_var=None)
 image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
 
 import_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("GOB-IMPORT-IMAGE-NAME", default_var="gob_import"),
+    image_name=Variable.get("pod-gob-import-image-name", default_var="gob_import"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB-IMPORT-IMAGE-TAG", default_var="latest"),
+    tag=Variable.get("pod-gob-import-image-tag", default_var="latest"),
 )
 
 
 upload_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("GOB-UPLOAD-IMAGE-NAME", default_var="gob_upload"),
+    image_name=Variable.get("pod-gob-upload-image-name", default_var="gob_upload"),
     # In accept or test environments, different tags could be used.
     # For example :develop or :test
-    tag=Variable.get("GOB-UPLOAD-IMAGE-TAG", default_var="latest"),
+    tag=Variable.get("pod-gob-upload-image-tag", default_var="latest"),
 )
 
 
@@ -59,7 +59,7 @@ volume_mount = V1VolumeMount(
 volume = V1Volume(
     name="gob-volume",
     persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(
-        claim_name=Variable.get("GOB-SHARED-STORAGE-CLAIM", "shared-storage-claim")
+        claim_name=Variable.get("pod-gob-shared-storage-claim", "shared-storage-claim")
     ),
 )
 
