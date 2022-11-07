@@ -159,7 +159,7 @@ with DAG(
 
     apply_events = KubernetesPodOperator(
         dag=dag,
-        task_id=f"apply_events",
+        task_id="apply_events",
         namespace=namespace,
         image=upload_container_image,
         name=f"{workload_name}-apply_events",
@@ -174,4 +174,21 @@ with DAG(
         env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     )
 
-nap_import >> update_model >> import_compare >> import_upload >> apply_events
+    relate = KubernetesPodOperator(
+        dag=dag,
+        task_id="relate",
+        namespace=namespace,
+        image=upload_container_image,
+        name=f"{workload_name}-relate",
+        cmds=[
+            "python",
+            "-m",
+            "gobupload",
+            "relate",
+            "nap",
+            "peilmerken"
+        ],
+        env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
+    )
+
+nap_import >> update_model >> import_compare >> import_upload >> apply_events >> relate
