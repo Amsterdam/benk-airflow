@@ -56,7 +56,35 @@ class GrondslagEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
     GRONDSLAG_DATABASE_HOST = Variable.get("grondslag-host")
-    GRONDSLAG_DATABASE_PASSWORD = Variable.get("grondslag-pw")
+    GRONDSLAG_DATABASE_PASSWORD = Variable.get("grondslag-password")
     GRONDSLAG_DATABASE = Variable.get("grondslag-db")
     GRONDSLAG_DATABASE_PORT = Variable.get("grondslag-port", "1521")
     GRONDSLAG_DATABASE_USER = Variable.get("grondslag-user")
+
+
+class DGDialogEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the grondslag database."""
+
+    BINBG_DATABASE_HOST = Variable.get("dgdialog-host")
+    BINBG_DATABASE_PASSWORD = Variable.get("dgdialog-password")
+    BINBG_DATABASE = Variable.get("dgdialog-db")
+    BINBG_DATABASE_PORT = Variable.get("dgdialog-port", "1521")
+    BINBG_DATABASE_USER = Variable.get("dgdialog-user")
+
+
+class ObjectStoreGOBEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the grondslag database."""
+
+    GOB_OBJECTSTORE_TENANT_ID = Variable.get("objectstore-gob-tenantid")
+    GOB_OBJECTSTORE_PASSWORD = Variable.get("objectstore-gob-password")
+    GOB_OBJECTSTORE_TENANT_NAME = Variable.get("objectstore-gob-tenantname")
+    GOB_OBJECTSTORE_USER = Variable.get("objectstore-gob-user")
+
+
+class ObjectStoreBasisInformatieEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the grondslag database."""
+
+    BASISINFORMATIE_OBJECTSTORE_TENANT_ID = Variable.get("objectstore-bi-tenantid")
+    BASISINFORMATIE_OBJECTSTORE_PASSWORD = Variable.get("objectstore-bi-password")
+    BASISINFORMATIE_OBJECTSTORE_TENANT_NAME = Variable.get("objectstore-bi-tenantname")
+    BASISINFORMATIE_OBJECTSTORE_USER = Variable.get("objectstore-bi-user")
