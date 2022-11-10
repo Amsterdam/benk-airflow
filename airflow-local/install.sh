@@ -66,6 +66,10 @@ kubectl --namespace ${NAMESPACE} create -f "${SCRIPT_DIR}/templates/local-persis
 
 # Add apache airflow chart repository and install its helm chart
 helm repo add apache-airflow https://airflow.apache.org
+
+# check for newer versions
+helm repo update
+
 helm upgrade \
   --install airflow apache-airflow/airflow \
   --namespace ${NAMESPACE} \
@@ -76,3 +80,4 @@ helm upgrade \
 echo "Done"
 echo "Forward ports: kubectl port-forward svc/airflow-webserver 8080:8080 --namespace ${NAMESPACE} > /dev/null 2>&1 &"
 echo "Airflow dashboard: open http://localhost:8080"
+echo "NB: In case of timeouts connecting to the dashboard, try mapping to a different port"
