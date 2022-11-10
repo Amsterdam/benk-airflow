@@ -23,36 +23,30 @@ team_name = "BenK"
 workload_name = "NAP"
 dag_id = team_name + "_" + workload_name
 
-# Variables below should be added in the GUI (http://localhost:8080/variable/list/),
-# or leave empty to use defaults when available.
-
-# The Kubernetes namespace, something like 'airflow-benkbbn1' on the server.
-namespace = Variable.get("pod-namespace", default_var="airflow")
-# URL to registry, leave empty to use local registry (development environment).
-container_registry_url = Variable.get("pod-container-registry-url", default_var=None)
+namespace = Variable.get("pod-namespace")
+container_registry_url = Variable.get("pod-container-registry-url", None)
 image_pull_policy = get_image_pull_policy(registry_url=container_registry_url)
 
 import_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("pod-gob-import-image-name", default_var="gob_import"),
-    # In accept or test environments, different tags could be used.
-    # For example :develop or :test
-    tag=Variable.get("pod-gob-import-image-tag", default_var="latest"),
+    image_name=Variable.get("pod-gob-import-image-name"),
+    tag=Variable.get("pod-gob-import-image-tag")
 )
 
 
 upload_container_image = get_image_url(
     registry_url=container_registry_url,
-    image_name=Variable.get("pod-gob-upload-image-name", default_var="gob_upload"),
-    # In accept or test environments, different tags could be used.
-    # For example :develop or :test
-    tag=Variable.get("pod-gob-upload-image-tag", default_var="latest"),
+    image_name=Variable.get("pod-gob-upload-image-name"),
+    tag=Variable.get("pod-gob-upload-image-tag"),
 )
 
 
 # Where the "gob-volume"-volume is mounted in the pod.
 volume_mount = V1VolumeMount(
-    name="gob-volume", mount_path="/app/shared", sub_path=None, read_only=False
+    name="gob-volume",
+    mount_path="/app/shared",
+    sub_path=None,
+    read_only=False
 )
 
 # Which claim gob-volume should use (shared-storage-claim)
@@ -60,7 +54,7 @@ volume = V1Volume(
     name="gob-volume",
     persistent_volume_claim=V1PersistentVolumeClaimVolumeSource(
         claim_name=Variable.get("pod-gob-shared-storage-claim", "shared-storage-claim")
-    ),
+    )
 )
 
 operator_default_args = {
@@ -89,7 +83,7 @@ with DAG(
 ) as dag:
     nap_import = KubernetesPodOperator(
         dag=dag,
-        task_id=f"nap_import",
+        task_id="nap_import",
         namespace=namespace,
         image=import_container_image,
         name=f"nap_import",
@@ -107,7 +101,7 @@ with DAG(
 
     update_model = KubernetesPodOperator(
         dag=dag,
-        task_id=f"update_model",
+        task_id="update_model",
         namespace=namespace,
         image=upload_container_image,
         name=f"{workload_name}-update_model",
@@ -124,7 +118,7 @@ with DAG(
 
     import_compare = KubernetesPodOperator(
         dag=dag,
-        task_id=f"import_compare",
+        task_id="import_compare",
         namespace=namespace,
         image=upload_container_image,
         name=f"{workload_name}-import_compare",
@@ -133,7 +127,6 @@ with DAG(
             "-m",
             "gobupload",
             "--message-data",
-            # convert dict back to json
             "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
             "compare",
         ],
@@ -142,7 +135,7 @@ with DAG(
 
     import_upload = KubernetesPodOperator(
         dag=dag,
-        task_id=f"import_upload",
+        task_id="import_upload",
         namespace=namespace,
         image=upload_container_image,
         name=f"{workload_name}-import_upload",
@@ -159,7 +152,7 @@ with DAG(
 
     apply_events = KubernetesPodOperator(
         dag=dag,
-        task_id=f"apply_events",
+        task_id="apply_events",
         namespace=namespace,
         image=upload_container_image,
         name=f"{workload_name}-apply_events",
