@@ -74,8 +74,8 @@ helm upgrade \
   --install airflow apache-airflow/airflow \
   --namespace ${NAMESPACE} \
   --create-namespace \
-  --values="${SCRIPT_DIR}/values.yaml" \
-  --debug
+  --values="${SCRIPT_DIR}/values.yaml"
+#  --debug
 
 echo "Done"
 echo "Forward ports: kubectl port-forward svc/airflow-webserver 8080:8080 --namespace ${NAMESPACE} > /dev/null 2>&1 &"
