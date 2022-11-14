@@ -16,3 +16,73 @@ images:
   airflow:
     # default is python3.7
     tag: 2.4.2-python3.9
+
+# Prefixed with AIRFLOW_VAR_ and UPPERcased
+env:
+  # POD
+  - name: "AIRFLOW_VAR_POD-NAMESPACE"
+    value: "airflow"
+  - name: "AIRFLOW_VAR_POD-GOB-IMPORT-IMAGE-NAME"
+    value: "gob_import"
+  - name: "AIRFLOW_VAR_POD-GOB-IMPORT-IMAGE-TAG"
+    value: "latest"
+  - name: "AIRFLOW_VAR_POD-GOB-UPLOAD-IMAGE-NAME"
+    value: "gob_upload"
+  - name: "AIRFLOW_VAR_POD-GOB-UPLOAD-IMAGE-TAG"
+    value: "latest"
+
+  # GOB DB
+  - name: "AIRFLOW_VAR_GOB-DATABASE-PASSWORD"
+    value: "insecure"
+  - name: "AIRFLOW_VAR_GOB-DATABASE-USER"
+    value: "gob"
+  - name: "AIRFLOW_VAR_GOB-DATABASE-PORT-OVERRIDE"
+    value: "5406"
+  - name: "AIRFLOW_VAR_GOB-DATABASE-NAME"
+    value: "gob"
+  - name: "AIRFLOW_VAR_GOB-DATABASE-HOST-OVERRIDE"
+    value: "host.docker.internal"
+  
+  # Grondslag
+  - name: "AIRFLOW_VAR_GRONDSLAG-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_GRONDSLAG-USER"
+    value: ""
+  - name: "AIRFLOW_VAR_GRONDSLAG-PORT"
+    value: ""
+  - name: "AIRFLOW_VAR_GRONDSLAG-DB"
+    value: ""
+  - name: "AIRFLOW_VAR_GRONDSLAG-HOST"
+    value: "host.docker.internal"
+  
+  # DGDialog
+  - name: "AIRFLOW_VAR_DGDIALOG-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_DGDIALOG-USER"
+    value: ""
+  - name: "AIRFLOW_VAR_DGDIALOG-PORT"
+    value: ""
+  - name: "AIRFLOW_VAR_DGDIALOG-DB"
+    value: ""
+  - name: "AIRFLOW_VAR_DGDIALOG-HOST"
+    value: "host.docker.internal"
+
+  # objectstore
+  - name: "AIRFLOW_VAR_OBJECTSTORE-GOB-TENANTID"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-GOB-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-GOB-TENANTNAME"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-GOB-USER"
+    value: ""
+
+  # objectstore
+  - name: "AIRFLOW_VAR_OBJECTSTORE-BI-TENANTID"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-BI-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-BI-TENANTNAME"
+    value: ""
+  - name: "AIRFLOW_VAR_OBJECTSTORE-BI-USER"
+    value: ""
