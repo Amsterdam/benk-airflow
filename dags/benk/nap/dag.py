@@ -2,26 +2,32 @@
 
 Order of tasks is as it was defined in gob. See gobworkflow/workflow/config.py.
 """
+import json
 from datetime import datetime
 
 from airflow import DAG
 
-from benk.common import default_args, TEAM_NAME
-from benk.tasks import ImportOperator, UploadOperator
+from benk.common import TEAM_NAME, BaseOperaterArgs
+from benk.environment import GrondslagEnvironment, GOBEnvironment, GenericEnvironment
+from benk.workflow import Import
+
+env_vars = GenericEnvironment().env_vars() + GOBEnvironment().env_vars() + GrondslagEnvironment().env_vars()
 
 dag_default_args = {
-    "default_args": default_args,
+    "default_args": BaseOperaterArgs | {"env_vars": env_vars},  # operater kwargs
     "schedule_interval": None,
     "catchup": False,
-    "start_date": datetime.utcnow()
+    "start_date": datetime.utcnow(),
+    "user_defined_macros": {"json": json},  # must be in the same module as DAG
+    "template_searchpath": ["/"]
 }
 
 params = {
     "catalogue": "nap",
     "collection": "peilmerken",
+    "application": "Grondslag",
     "mode": "full"
 }
-
 
 with DAG(
     dag_id=f"{TEAM_NAME}_{'_'.join(params.values())}",
@@ -29,40 +35,4 @@ with DAG(
     tags=["import", "update", "compare", "store", "apply"],
     **dag_default_args
 ):
-    nap_import = ImportOperator("nap_import", arguments=[
-            "import",
-            "--catalogue={{ params.catalog }}",
-            "--collection={{ params.collection }}",
-            "--mode={{ params.mode }}"
-        ]
-    )
-
-    update_model = UploadOperator("update_model", arguments=[
-            "apply",
-            "--catalogue=nap",
-            "--collection=peilmerken"
-        ]
-    )
-
-    import_compare = UploadOperator("import_compare", arguments=[
-            "--message-data",
-            "{{ json.dumps(task_instance.xcom_pull('nap_import')) }}",
-            "compare"
-        ]
-    )
-
-    import_upload = UploadOperator("import_upload", arguments=[
-            "--message-data",
-            "{{ json.dumps(task_instance.xcom_pull('import_compare')) }}",
-            "full_update"
-        ]
-    )
-
-    apply_events = UploadOperator("apply_events", arguments=[
-            "--message-data",
-            "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}",
-            "apply"
-        ]
-    )
-
-nap_import >> update_model >> import_compare >> import_upload >> apply_events
+    Import.workflow()
