@@ -6,7 +6,7 @@ from pathlib import Path
 from airflow.models.dag import DAG
 
 from benk.common import default_args
-from benk.tasks import UploadTask
+from benk.tasks import UploadOperator
 
 
 @cache
@@ -52,7 +52,7 @@ for catalog, collections in get_relations().items():
                 tags=["relate", catalog, collection, relation],
                 **dag_default_args
             ):
-                prepare = UploadTask.run(arguments=[
+                prepare = UploadOperator("relate_prepare", arguments=[
                     "relate_prepare",
                     "--catalogue={{ params.catalog }}",
                     "--collection={{ params.collection }}",
@@ -60,33 +60,33 @@ for catalog, collections in get_relations().items():
                     "--mode=full"
                 ])
 
-                process = UploadTask.run(arguments=[
+                process = UploadOperator("relate_process", arguments=[
                     "--message-data",
                     "{{ json.dumps(task_instance.xcom_pull('relate_prepare')) }}",
                     "relate_process"
                 ])
 
-                update = UploadTask.run(arguments=[
+                update = UploadOperator("import_upload", arguments=[
                     "--message-data",
                     "{{ json.dumps(task_instance.xcom_pull('relate_process')) }}",
                     "full_update"
                 ])
 
-                apply = UploadTask.run(arguments=[
+                apply = UploadOperator("apply_events", arguments=[
                     "--message-data",
                     "{{ json.dumps(task_instance.xcom_pull('import_upload')) }}",
                     "apply"
                 ])
 
-                update_view = UploadTask.run(arguments=[
+                update_view = UploadOperator("update_view", arguments=[
                     "--message-data",
                     "{{ json.dumps(task_instance.xcom_pull('apply_events')) }}",
                     "relate_update_view"
                 ])
 
-                check = UploadTask.run(arguments=[
+                check = UploadOperator("check", arguments=[
                     "--message-data",
-                    "{{ json.dumps(task_instance.xcom_pull('apply_events')) }}",
+                    "{{ json.dumps(task_instance.xcom_pull('update_view')) }}",
                     "relate_check"
                 ])
 

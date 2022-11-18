@@ -1,1 +1,1 @@
-from task import UploadTask
+from task import ImportOperator, UploadOperator
