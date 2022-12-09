@@ -1,4 +1,5 @@
 import importlib
+import os
 from pathlib import Path
 from typing import Iterator, Union, TYPE_CHECKING
 
@@ -44,8 +45,7 @@ class Model(BaseModel):
 
 class _Definitions:
 
-    # were in /opt/airflow
-    _path = Path.cwd() / "dags" / "benk" / "definitions"
+    _path = Path(os.environ["AIRFLOW_HOME"]) / "dags" / "benk" / "definitions"
 
     def __iter__(self) -> Iterator[Model]:
         for obj in self._path.glob("*.json"):
