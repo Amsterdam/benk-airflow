@@ -1,8 +1,7 @@
 import importlib
-import os
-from pathlib import Path
 from typing import TYPE_CHECKING, Iterator, Union
 
+from benk.common import AIRFLOW_HOME
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
@@ -51,7 +50,7 @@ class Collection(BaseModel):
 
     Example:
         "collection": "peilmerken",
-        "workflows": [{"workflow": "wf", "arguments": {}]
+        "workflows": [{"workflow": "workflow", "arguments": {}]
     """
 
     collection: str
@@ -67,10 +66,10 @@ class Model(BaseModel):
 
 class _Definitions:
 
-    _path = Path(os.environ["AIRFLOW_HOME"]) / "dags" / "benk" / "definitions"
+    _path = AIRFLOW_HOME / "dags" / "benk" / "definitions"
 
     def __iter__(self) -> Iterator[Model]:
-        """Yields a parsed Model from all json objects found."""
+        """Yields a parsed Model from all json objects found in path."""
         for obj in self._path.glob("*.json"):
             yield Model.parse_file(obj, encoding="utf-8")
 

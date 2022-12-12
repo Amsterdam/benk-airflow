@@ -1,6 +1,6 @@
 from typing import List
 
-from airflow.kubernetes.secret import Secret
+# from airflow.kubernetes.secret import Secret
 from airflow.models import Variable
 from kubernetes.client import V1EnvVar
 
@@ -17,8 +17,8 @@ class OperatorEnvironment:
         def _is_env_var(k) -> bool:
             if str(k).startswith("__"):
                 return False
-            if isinstance(getattr(self, k), Secret):
-                return False
+            # if isinstance(getattr(self, k), Secret):
+            #     return False
             if callable(getattr(self, k)):
                 return False
             return True

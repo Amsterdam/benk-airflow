@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 set -e
-DAGS_PATH="dags/benk/"
-export PYTHONPATH=${PYTHONPATH}:dags/
+
+# all configuration lives in pyproject.toml, except flake8 (.flake8)
 
 echo "Running mypy"
-mypy "${DAGS_PATH}"
-
-echo "Running tests"
-export COVERAGE_FILE=/tmp/.coverage
+mypy
 
 echo "Running unit tests"
-coverage run --source=$DAGS_PATH -m pytest -s tests/
+coverage run -m pytest
 
 echo "Coverage report"
-coverage report --show-missing --fail-under=100
+coverage report
 
 echo "Check if black finds no potential reformat fixes"
-black --check ${DAGS_PATH}
+black --check dags/benk
 
 echo "Running flake8"
-flake8 $DAGS_PATH
+flake8 dags/benk

@@ -50,12 +50,14 @@ UploadArgs = dict(
     volumes=[GobVolume.v1volume],
     volume_mounts=[GobVolume.v1mount],
     cmds=["python", "-m", "gobupload"],
-    env_vars=(GenericEnvironment().env_vars() + GOBEnvironment().env_vars()),
+    env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
     **operator_default_args,
 )
 
 # TODO: filter env vars per import
 # TODO: store as secret?
+# TODO: Use templates!
+# https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#airflow-variables
 ImportArgs = dict(
     namespace=NAMESPACE,
     image=ImportImage.url,
@@ -73,17 +75,17 @@ ImportArgs = dict(
 )
 
 
-class DAG:
+class BaseDAG:
 
     Operator = KubernetesPodOperator
 
     @classmethod
     @abstractmethod
-    def create_dag(cls):
+    def tasks(cls):  # pragma: no cover
         pass
 
 
-class Import(DAG):
+class Import(BaseDAG):
     @classmethod
     def import_(cls):
         return cls.Operator(
@@ -152,17 +154,17 @@ class Import(DAG):
         )
 
     @classmethod
-    def create_dag(cls):
-        return (
-            cls.import_()
-            >> cls.update()
-            >> cls.compare()
-            >> cls.upload()
-            >> cls.apply()
-        )
+    def tasks(cls):
+        return [
+            cls.import_(),
+            cls.update(),
+            cls.compare(),
+            cls.upload(),
+            cls.apply()
+        ]
 
 
-class Relate(DAG):
+class Relate(BaseDAG):
     @classmethod
     def prepare(cls):
         return cls.Operator(
@@ -244,12 +246,12 @@ class Relate(DAG):
         )
 
     @classmethod
-    def create_dag(cls):
-        return (
-            cls.prepare()
-            >> cls.process()
-            >> cls.update()
-            >> cls.apply()
-            >> cls.update_view()
-            >> cls.check()
-        )
+    def tasks(cls):
+        return [
+            cls.prepare(),
+            cls.process(),
+            cls.update(),
+            cls.apply(),
+            cls.update_view(),
+            cls.check()
+        ]

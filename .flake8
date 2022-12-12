@@ -14,5 +14,7 @@ exclude =
     __pycache__,
     .mypy_cache,
     .pytest,
+    venv,
+    tests
 max-complexity = 6
 show_source = true
