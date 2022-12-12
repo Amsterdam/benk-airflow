@@ -1,12 +1,20 @@
 from abc import abstractmethod
 
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-
+from airflow.models import Variable
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+    KubernetesPodOperator,
+)
 from benk.common import NAMESPACE, TEAM_NAME
-from benk.environment import GenericEnvironment, GOBEnvironment, GrondslagEnvironment, DGDialogEnvironment, \
-    ObjectStoreBasisInformatieEnvironment
-from benk.image import UploadImage, ImportImage
-from benk.volume import GobVolume
+from benk.environment import (
+    DGDialogEnvironment,
+    GenericEnvironment,
+    GOBEnvironment,
+    GrondslagEnvironment,
+    ObjectStoreBasisInformatieEnvironment,
+)
+from benk.image import Image
+from benk.volume import Volume
+
 
 operator_default_args = {
     "labels": {"team_name": TEAM_NAME},
@@ -15,9 +23,25 @@ operator_default_args = {
     "hostnetwork": True,
     "log_events_on_failure": True,
     "reattach_on_restart": False,
-    "do_xcom_push": True
+    "do_xcom_push": True,
 }
 
+GobVolume = Volume(
+    name="gob-volume",
+    mount_path="/app/shared",
+    claim=Variable.get("pod-gob-shared-storage-claim", "shared-storage-claim"),
+)
+
+
+UploadImage = Image(
+    name=Variable.get("pod-gob-upload-image-name", default_var="gob_upload"),
+    tag=Variable.get("pod-gob-upload-image-tag", default_var="latest"),
+)
+
+ImportImage = Image(
+    name=Variable.get("pod-gob-import-image-name", default_var="gob_import"),
+    tag=Variable.get("pod-gob-import-image-tag", default_var="latest"),
+)
 
 UploadArgs = dict(
     namespace=NAMESPACE,
@@ -26,11 +50,8 @@ UploadArgs = dict(
     volumes=[GobVolume.v1volume],
     volume_mounts=[GobVolume.v1mount],
     cmds=["python", "-m", "gobupload"],
-    env_vars=(
-        GenericEnvironment().env_vars()
-        + GOBEnvironment().env_vars()
-    ),
-    **operator_default_args
+    env_vars=(GenericEnvironment().env_vars() + GOBEnvironment().env_vars()),
+    **operator_default_args,
 )
 
 # TODO: filter env vars per import
@@ -48,7 +69,7 @@ ImportArgs = dict(
         + DGDialogEnvironment().env_vars()
         + ObjectStoreBasisInformatieEnvironment().env_vars()
     ),
-    **operator_default_args
+    **operator_default_args,
 )
 
 
@@ -63,7 +84,6 @@ class DAG:
 
 
 class Import(DAG):
-
     @classmethod
     def import_(cls):
         return cls.Operator(
@@ -74,7 +94,7 @@ class Import(DAG):
                 "--catalogue={{ params.catalogue }}",
                 "--collection={{ params.collection }}",
                 "--application={{ params.application }}",
-                "--mode={{ params.mode }}"
+                "--mode={{ params.mode }}",
             ],
             **ImportArgs,
         )
@@ -87,9 +107,9 @@ class Import(DAG):
             arguments=[
                 "apply",
                 "--catalogue={{ params.catalogue }}",
-                "--collection={{ params.collection }}"
+                "--collection={{ params.collection }}",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -100,9 +120,9 @@ class Import(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('import')) }}",
-                "compare"
+                "compare",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -113,9 +133,9 @@ class Import(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('compare')) }}",
-                "full_update"
+                "full_update",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -126,18 +146,23 @@ class Import(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('upload')) }}",
-                "apply"
+                "apply",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
     def create_dag(cls):
-        return cls.import_() >> cls.update() >> cls.compare() >> cls.upload() >> cls.apply()
+        return (
+            cls.import_()
+            >> cls.update()
+            >> cls.compare()
+            >> cls.upload()
+            >> cls.apply()
+        )
 
 
 class Relate(DAG):
-
     @classmethod
     def prepare(cls):
         return cls.Operator(
@@ -148,9 +173,9 @@ class Relate(DAG):
                 "--catalogue={{ params.catalogue }}",
                 "--collection={{ params.collection }}",
                 "--attribute={{ params.attribute }}",
-                "--mode=full"
+                "--mode=full",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -161,9 +186,9 @@ class Relate(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('prepare')) }}",
-                "relate_process"
+                "relate_process",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -174,9 +199,9 @@ class Relate(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('process')) }}",
-                "full_update"
+                "full_update",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -187,9 +212,9 @@ class Relate(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('update')) }}",
-                "apply"
+                "apply",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -200,9 +225,9 @@ class Relate(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('apply')) }}",
-                "relate_update_view"
+                "relate_update_view",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
@@ -213,11 +238,18 @@ class Relate(DAG):
             arguments=[
                 "--message-data",
                 "{{ json.dumps(task_instance.xcom_pull('update_view')) }}",
-                "relate_check"
+                "relate_check",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     @classmethod
     def create_dag(cls):
-        return cls.prepare() >> cls.process() >> cls.update() >> cls.apply() >> cls.update_view() >> cls.check()
+        return (
+            cls.prepare()
+            >> cls.process()
+            >> cls.update()
+            >> cls.apply()
+            >> cls.update_view()
+            >> cls.check()
+        )
