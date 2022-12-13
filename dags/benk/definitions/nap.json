@@ -1,0 +1,24 @@
+{
+  "catalog": "nap",
+  "collections": [
+    {
+      "collection": "peilmerken",
+      "workflows": [
+        {
+          "workflow": "import",
+          "arguments": {
+            "application": "Grondslag",
+            "mode": "full"
+          }
+        },
+        {
+          "workflow": "relate",
+          "arguments": {
+            "attribute": "ligt_in_gebieden_bouwblok",
+            "mode": "full"
+          }
+        }
+      ]
+    }
+  ]
+}
