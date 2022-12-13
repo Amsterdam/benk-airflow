@@ -6,6 +6,18 @@
 trigger:
 - development
 
+pr:
+  branches:
+    include:
+    - development
+    - releases/*
+  paths:
+    include:
+    - "*"
+    exclude:
+    - airflow-local
+  drafts: true # whether to build draft PRs, defaults to true
+
 pool:
   vmImage: ubuntu-latest
 
@@ -17,3 +29,6 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+- task: Bash@3
+  inputs:
+    filePath: 'test.sh'
