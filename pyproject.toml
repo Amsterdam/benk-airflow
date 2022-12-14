@@ -5,3 +5,80 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "kubernetes.client.*"
 ignore_missing_imports = true
+
+[tool.mypy]
+mypy_path = "dags"
+packages = "benk"
+follow_imports = "skip"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+
+[tool.black]
+exclude = ["**/venv"]
+line-length = 88
+
+[tool.coverage.run]
+source = ["dags/benk"]
+data_file = "/tmp/.coverage"
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/"]
+pythonpath = "dags"
+addopts = [
+    "--capture=no",
+    "--ignore-glob=**/test_environment.py",  # temp disable
+    "--import-mode=importlib",
+    # "--disable-warnings"  # temp disable airflow warning spamming
+]
+env = [
+    "AIRFLOW_VAR_POD-NAMESPACE=test_airflow",
+    "AIRFLOW_VAR_POD-CONTAINER-REGISTRY-URL=test_registry",
+    "AIRFLOW_VAR_POD-GOB-SHARED-STORAGE-CLAIM=",
+    "AIRFLOW_VAR_POD-GOB-UPLOAD-IMAGE-NAME=",
+    "AIRFLOW_VAR_POD-GOB-UPLOAD-IMAGE-TAG=",
+    "AIRFLOW_VAR_POD-GOB-IMPORT-IMAGE-NAME=",
+    "AIRFLOW_VAR_POD-GOB-IMPORT-IMAGE-TAG=",
+    "AIRFLOW_VAR_GOB-SHARED-DIR",
+    "AIRFLOW_VAR_GOB-DATABASE-USER=gob",
+    "AIRFLOW_VAR_GOB-DATABASE-NAME=gob",
+    "AIRFLOW_VAR_GOB-DATABASE-PASSWORD=insecure",
+    "AIRFLOW_VAR_GOB-DATABASE-HOST-OVERRIDE=host",
+    "AIRFLOW_VAR_GOB-DATABASE-PORT-OVERRIDE=5432",
+    # Grondslag
+    "AIRFLOW_VAR_GRONDSLAG-PASSWORD=",
+    "AIRFLOW_VAR_GRONDSLAG-USER=",
+    "AIRFLOW_VAR_GRONDSLAG-PORT=",
+    "AIRFLOW_VAR_GRONDSLAG-DB=",
+    "AIRFLOW_VAR_GRONDSLAG-HOST=",
+    # DGDialog
+    "AIRFLOW_VAR_DGDIALOG-PASSWORD=",
+    "AIRFLOW_VAR_DGDIALOG-USER=",
+    "AIRFLOW_VAR_DGDIALOG-PORT=",
+    "AIRFLOW_VAR_DGDIALOG-DB=",
+    "AIRFLOW_VAR_DGDIALOG-HOST=",
+    # objectstore
+    "AIRFLOW_VAR_OBJECTSTORE-GOB-TENANTID=",
+    "AIRFLOW_VAR_OBJECTSTORE-GOB-PASSWORD=",
+    "AIRFLOW_VAR_OBJECTSTORE-GOB-TENANTNAME=",
+    "AIRFLOW_VAR_OBJECTSTORE-GOB-USER=",
+    # objectstore
+    "AIRFLOW_VAR_OBJECTSTORE-BI-TENANTID=",
+    "AIRFLOW_VAR_OBJECTSTORE-BI-PASSWORD=",
+    "AIRFLOW_VAR_OBJECTSTORE-BI-TENANTNAME=",
+    "AIRFLOW_VAR_OBJECTSTORE-BI-USER="
+]
