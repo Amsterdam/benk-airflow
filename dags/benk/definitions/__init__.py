@@ -1,7 +1,7 @@
 import importlib
+from pathlib import Path
 from typing import TYPE_CHECKING, Iterator, Union
 
-from benk.common import AIRFLOW_HOME
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
@@ -66,11 +66,16 @@ class Model(BaseModel):
 
 class _Definitions:
 
-    _path = AIRFLOW_HOME / "dags" / "benk" / "definitions"
+    _path = Path(__file__).parent
 
     def __iter__(self) -> Iterator[Model]:
         """Yield a parsed Model from all json objects found in path."""
-        for obj in self._path.glob("*.json"):
+        objs = list(self._path.glob("*.json"))
+
+        if not objs:
+            raise FileNotFoundError(f"Definitions folder is empty: {self._path}")
+
+        for obj in objs:
             yield Model.parse_file(obj, encoding="utf-8")
 
 
