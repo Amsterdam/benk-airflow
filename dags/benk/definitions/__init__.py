@@ -33,7 +33,7 @@ class Workflow(BaseModel):
 
     @property
     def handler(self) -> Handler:
-        """Returns handler belonging to `workflow`."""
+        """Return handler belonging to `workflow`."""
         class_name = self.workflow.title()
 
         try:
@@ -69,7 +69,7 @@ class _Definitions:
     _path = AIRFLOW_HOME / "dags" / "benk" / "definitions"
 
     def __iter__(self) -> Iterator[Model]:
-        """Yields a parsed Model from all json objects found in path."""
+        """Yield a parsed Model from all json objects found in path."""
         for obj in self._path.glob("*.json"):
             yield Model.parse_file(obj, encoding="utf-8")
 

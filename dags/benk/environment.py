@@ -31,18 +31,20 @@ class OperatorEnvironment:
 
 
 class GenericEnvironment(OperatorEnvironment):
-    """Miscellaneous settings shared between containers"""
+    """Miscellaneous settings shared between containers."""
 
     GOB_SHARED_DIR = Variable.get("GOB-SHARED-DIR", "/app/shared")
 
 
 class GOBEnvironment(OperatorEnvironment):
-    """Settings to connect to connect to the GOB database.
+    """
+    Settings to connect to connect to the GOB database.
 
     Note: this provides env vars for the dict 'GOB_DB' in config.py in
     gobupload and not in gobconfig. Gobconfig uses GOB_DATABASE_* as env var
     names, instead of DATABASE_*.
     """
+
     DATABASE_USER = Variable.get("gob-database-user", "gob")
     DATABASE_NAME = Variable.get("gob-database-name", "gob")
     DATABASE_PASSWORD = Variable.get("gob-database-password")

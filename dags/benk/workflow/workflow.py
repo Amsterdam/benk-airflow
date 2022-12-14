@@ -76,18 +76,27 @@ ImportArgs = dict(
 
 
 class BaseDAG:
+    """
+    Base DAG abstraction.
 
-    Operator = KubernetesPodOperator
+    Implement `tasks` method to return a list of tasks to be executed sequentially.
+    """
+
+    Operator: KubernetesPodOperator = KubernetesPodOperator
 
     @classmethod
     @abstractmethod
-    def tasks(cls):  # pragma: no cover
+    def tasks(cls) -> list[Operator]:  # pragma: no cover
+        """Return list of tasks."""
         pass
 
 
 class Import(BaseDAG):
+    """Define import workflow."""
+
     @classmethod
     def import_(cls):
+        """Define an import task."""
         return cls.Operator(
             task_id="import",
             name="import",  # required
@@ -103,6 +112,7 @@ class Import(BaseDAG):
 
     @classmethod
     def update(cls):
+        """Define an update model task."""
         return cls.Operator(
             task_id="update",
             name="update",
@@ -116,6 +126,7 @@ class Import(BaseDAG):
 
     @classmethod
     def compare(cls):
+        """Define a compare task."""
         return cls.Operator(
             task_id="compare",
             name="compare",
@@ -129,6 +140,7 @@ class Import(BaseDAG):
 
     @classmethod
     def upload(cls):
+        """Define an upload events task."""
         return cls.Operator(
             task_id="upload",
             name="upload",
@@ -142,6 +154,7 @@ class Import(BaseDAG):
 
     @classmethod
     def apply(cls):
+        """Define an apply events task."""
         return cls.Operator(
             task_id="apply",
             name="apply",
@@ -155,6 +168,7 @@ class Import(BaseDAG):
 
     @classmethod
     def tasks(cls):
+        """Define a list of tasks to perform for an Import."""
         return [
             cls.import_(),
             cls.update(),
@@ -165,8 +179,11 @@ class Import(BaseDAG):
 
 
 class Relate(BaseDAG):
+    """Define a Relate workflow."""
+
     @classmethod
     def prepare(cls):
+        """Define a prepare relate task."""
         return cls.Operator(
             task_id="prepare",
             name="prepare",
@@ -182,6 +199,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def process(cls):
+        """Define a relate process task."""
         return cls.Operator(
             task_id="process",
             name="process",
@@ -195,6 +213,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def update(cls):
+        """Define a update events task."""
         return cls.Operator(
             task_id="update",
             name="update",
@@ -208,6 +227,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def apply(cls):
+        """Define an apply events task."""
         return cls.Operator(
             task_id="apply",
             name="apply",
@@ -221,6 +241,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def update_view(cls):
+        """Define a relate update view task."""
         return cls.Operator(
             task_id="update_view",
             name="update_view",
@@ -234,6 +255,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def check(cls):
+        """Define a relate check task."""
         return cls.Operator(
             task_id="check",
             name="check",
@@ -247,6 +269,7 @@ class Relate(BaseDAG):
 
     @classmethod
     def tasks(cls):
+        """Define a list of tasks to perform for an Import."""
         return [
             cls.prepare(),
             cls.process(),
