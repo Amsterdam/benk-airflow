@@ -1,0 +1,17 @@
+{
+  "catalog": "nap",
+  "collections": [
+    {
+      "collection": "peilmerken",
+      "workflows": [
+        {
+          "workflow": "import",
+          "arguments": {
+            "application": "Grondslag",
+            "mode": "full"
+          }
+        }
+      ]
+    }
+  ]
+}
