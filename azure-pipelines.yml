@@ -40,6 +40,7 @@ steps:
     --junitxml=junit/test-results.xml 
     --cov=dags/benk
     --cov-report=xml
+    --cov-report=term-missing
     --cov-fail-under=100
     tests/
   displayName: 'Run PyTest'
