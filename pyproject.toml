@@ -48,7 +48,6 @@ pythonpath = "dags"
 cache_dir = "/tmp/.pytest_cache"
 addopts = [
     "--capture=no",
-    "--ignore-glob=**/environment.py",  # temp disable
     "--import-mode=importlib",
     "--cov=dags/benk",
     "--cov-fail-under=100",

@@ -36,10 +36,8 @@ steps:
 
 - script: >
     python -m pytest
-    --doctest-modules 
     --junitxml=junit/test-results.xml 
     --cov-report=xml
-    tests/
   displayName: 'Run PyTest'
 
 - script: black --check dags/benk
