@@ -15,6 +15,12 @@ warn_unused_ignores = true
 disallow_any_generics = true
 check_untyped_defs = true
 no_implicit_reexport = true
+pretty = true
+
+# to be switched to true
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+disallow_untyped_calls = false
 
 [tool.isort]
 profile = "black"
@@ -39,11 +45,14 @@ exclude_lines = [
 [tool.pytest.ini_options]
 testpaths = ["tests/"]
 pythonpath = "dags"
+cache_dir = "/tmp/.pytest_cache"
 addopts = [
     "--capture=no",
     "--ignore-glob=**/test_environment.py",  # temp disable
     "--import-mode=importlib",
-    # "--disable-warnings"  # temp disable airflow warning spamming
+    "--cov=dags/benk",
+    "--cov-fail-under=100",
+    "--doctest-modules"
 ]
 env = [
     "AIRFLOW_VAR_POD-NAMESPACE=test_airflow",

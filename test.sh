@@ -2,16 +2,15 @@
 set -e
 
 echo "Running mypy"
-mypy
+mypy dags/benk
 
 echo "Running unit tests"
-coverage run -m pytest
-
-echo "Coverage report"
-coverage report
+python -m pytest
 
 echo "Check if black finds no potential reformat fixes"
 black --check dags/benk
 
 echo "Running flake8"
 flake8 dags/benk
+
+echo "Checks complete"
