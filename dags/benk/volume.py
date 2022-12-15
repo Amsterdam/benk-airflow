@@ -6,7 +6,7 @@ from kubernetes.client import (
 
 
 class Volume:
-    """Volume definition to be passed to the DAG through its properties"""
+    """Volume definition to be passed to the DAG through its properties."""
 
     def __init__(self, name: str, mount_path: str, claim: str):
         self.name = name
@@ -14,12 +14,14 @@ class Volume:
         self.claim = claim
 
     @property
-    def v1mount(self):
+    def v1mount(self) -> V1VolumeMount:
+        """Return volume mount used in a KubernetesPodOperator."""
         return V1VolumeMount(
             name=self.name, mount_path=self.path, sub_path=None, read_only=False
         )
 
     @property
-    def v1volume(self):
+    def v1volume(self) -> V1Volume:
+        """Return volume using claim, used in a KubernetesPodOperator."""
         pvc = V1PersistentVolumeClaimVolumeSource(claim_name=self.claim)
         return V1Volume(name=self.name, persistent_volume_claim=pvc)

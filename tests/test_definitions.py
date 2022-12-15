@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -26,6 +27,14 @@ class TestDefinitions:
               ]
             }
         assert model_definition[0].json() == json.dumps(result)
+
+    def test_iter_empty_folder(self, monkeypatch):
+        with monkeypatch.context():
+            monkeypatch.setattr("benk.definitions._Definitions._path", Path("/"))
+
+            with pytest.raises(FileNotFoundError):
+                from benk.definitions import DEFINITIONS
+                list(DEFINITIONS)
 
     def test_workflow_handler(self, model_definition):
         model = model_definition[0]
