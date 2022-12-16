@@ -43,6 +43,9 @@ steps:
 - script: black --check dags/benk
   displayName: 'Run Black'
 
+- script: isort --check --diff dags/benk
+  displayName: 'Run iSort'
+
 - script: flake8 dags/benk
   displayName: 'Run Flake8'
 
