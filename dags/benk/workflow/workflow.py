@@ -15,7 +15,6 @@ from benk.environment import (
 from benk.image import Image
 from benk.volume import Volume
 
-
 operator_default_args = {
     "labels": {"team_name": TEAM_NAME},
     "in_cluster": True,
