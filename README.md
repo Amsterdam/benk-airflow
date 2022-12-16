@@ -9,24 +9,14 @@ See [README.md](airflow-local/README.md) for installation instructions.
 
 # Development
 
-## Dependencies
-
-Before installing dependencies, a virtualenv is required.
-
-```shell
-pyenv virtualenv 3.10.1 benk-airflow
-pyenv activate benk-airflow 
-```
-
-Install dependencies from _requirements-dev.txt_. This file includes _requirements.txt_. 
-
-```shell
-pip install -r requirements-dev.txt
-```
+## Containerised
+This code is containerised, this works best. If you really, really want to be messing with virtual environments and
+all that, install `requirements-dev.txt` with pip for local development.
+But really, just use Docker.
 
 ## Code style
 
-All python code should be formatted with black. To do this run:
+All python code should be formatted with black and isort. To do this run:
 
 ```shell
 ./format.sh
@@ -39,7 +29,8 @@ Type checking is done with mypy.
 After checking of code style is done with flake8 and black.
 
 ```shell
-./test.sh
+docker compose build
+docker compose up
 ```
 
 # Airflow on Azure
