@@ -28,17 +28,16 @@ steps:
 - script: python -m pip install -r requirements-dev.txt
   displayName: 'Install requirements-dev'
 
+- script: python -m pip install pytest-azurepipelines~=1.0.4
+  displayName: 'Install pytest-azurepipelines'
+
 - script: mypy dags/benk
   displayName: 'Run MyPy'
 
 - script: >
     python -m pytest
-    --doctest-modules 
     --junitxml=junit/test-results.xml 
-    --cov=dags/benk
     --cov-report=xml
-    --cov-fail-under=20
-    tests/
   displayName: 'Run PyTest'
 
 - script: black --check dags/benk
