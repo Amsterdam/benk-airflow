@@ -3,153 +3,55 @@
   "collections": [
     {
       "collection": "buurten",
-      "workflows": [
-        {
-          "workflow": "import",
-          "arguments": {
-            "application": "DGDialog",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_wijk",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_ggpgebied",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_ggwgebied",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_brk_gemeente",
-            "mode": "full"
-          }
-        }
+      "import": {
+        "application": "DGDialog"
+      },
+      "relations": [
+        "ligt_in_gebieden_wijk",
+        "ligt_in_gebieden_ggpgebied",
+        "ligt_in_gebieden_ggwgebied",
+        "ligt_in_brk_gemeente"
       ]
     },
     {
       "collection": "wijken",
-      "workflows": [
-        {
-          "workflow": "import",
-          "arguments": {
-            "application": "DGDialog",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_stadsdeel",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_ggwgebied",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_brk_gemeente",
-            "mode": "full"
-          }
-        }
+      "import": {
+        "application": "DGDialog"
+      },
+      "relations": [
+        "ligt_in_gebieden_stadsdeel",
+        "ligt_in_gebieden_ggwgebied",
+        "ligt_in_brk_gemeente"
       ]
     },
     {
       "collection": "stadsdelen",
-      "workflows": [
-        {
-          "workflow": "import",
-          "arguments": {
-            "application": "DGDialog",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_brk_gemeente",
-            "mode": "full"
-          }
-        }
+      "import": {
+        "application": "DGDialog"
+      },
+      "relations": [
+        "ligt_in_brk_gemeente"
       ]
     },
     {
       "collection": "ggwgebieden",
-      "workflows": [
-        {
-          "workflow": "import",
-          "arguments": {
-            "application": "Basisinformatie",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_stadsdeel",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "bestaat_uit_gebieden_buurten",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_brk_gemeente",
-            "mode": "full"
-          }
-        }
+      "import": {
+        "application": "DGDialog"
+      },
+      "relations": [
+        "ligt_in_gebieden_stadsdeel",
+        "ligt_in_gebieden_ggwgebied",
+        "ligt_in_brk_gemeente"
       ]
     },
     {
       "collection": "bouwblokken",
-      "workflows": [
-        {
-          "workflow": "import",
-          "arguments": {
-            "application": "DGDialog",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_gebieden_buurt",
-            "mode": "full"
-          }
-        },
-        {
-          "workflow": "relate",
-          "arguments": {
-            "attribute": "ligt_in_brk_gemeente",
-            "mode": "full"
-          }
-        }
+      "import": {
+        "application": "DGDialog"
+      },
+      "relations": [
+        "ligt_in_gebieden_buurt",
+        "ligt_in_brk_gemeente"
       ]
     }
   ]

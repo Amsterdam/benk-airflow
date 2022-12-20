@@ -1,0 +1,31 @@
+{
+  "catalog": "brk2",
+  "prepare": true,
+  "collections": [
+    {
+      "collection": "kadastraleobjecten",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": [
+        "heeft_een_relatie_met_verblijfsobject",
+        "is_ontstaan_uit_g_perceel",
+        "is_ontstaan_uit_kadastraalobject"
+      ]
+    },
+    {
+      "collection": "kadastralesubjecten",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": []
+    },
+    {
+      "collection": "meta",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": []
+    }
+  ]
+}

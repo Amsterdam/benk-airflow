@@ -1,50 +1,14 @@
-import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterator, Union
+from typing import Iterator, Optional
 
-from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from benk.workflow import Import, Relate
+from pydantic import BaseModel, Field
 
 
-Handler = Union["Relate", "Import"]
-
-
-class RelateArguments(BaseModel):
-    """Argument definition for Relate workflow."""
-
-    attribute: str
-    mode: str = "update"
-
-
-class ImportArguments(BaseModel):
-    """Argument definition for Import workflow."""
-
+class _Import(BaseModel):
     application: str
-    mode: str = "full"
 
 
-class Workflow(BaseModel):
-    """Workflow definition(s). Requires a handler in benk.workflow."""
-
-    workflow: str
-    arguments: Union[ImportArguments, RelateArguments]
-
-    @property
-    def handler(self) -> Handler:
-        """Return handler belonging to `workflow`."""
-        class_name = self.workflow.title()
-
-        try:
-            module = importlib.import_module("benk.workflow", class_name)
-        except ImportError:
-            raise ImportError(f"Workflow handler not found: {class_name}")
-
-        return getattr(module, class_name)
-
-
-class Collection(BaseModel):
+class _Collection(BaseModel):
     """
     Collection definition.
 
@@ -54,29 +18,32 @@ class Collection(BaseModel):
     """
 
     collection: str
-    workflows: list[Workflow]
+    import_: _Import = Field(alias="import")
+    relations: list[str]
 
 
-class Model(BaseModel):
+class _Model(BaseModel):
     """Root model definition, should contain 1 catalog and 1 or more collections."""
 
     catalog: str
-    collections: list[Collection]
+    prepare: Optional[bool] = False
+    collections: list[_Collection]
 
 
 class _Definitions:
 
-    _path = Path(__file__).parent
+    def __init__(self, path: Path):
+        self._path = path
 
-    def __iter__(self) -> Iterator[Model]:
+    def __iter__(self) -> Iterator[_Model]:
         """Yield a parsed Model from all json objects found in path."""
         objs = list(self._path.glob("*.json"))
 
         if not objs:
             raise FileNotFoundError(f"Definitions folder is empty: {self._path}")
 
-        for obj in objs:
-            yield Model.parse_file(obj, encoding="utf-8")
+        for obj in sorted(objs):
+            yield _Model.parse_file(obj, encoding="utf-8")
 
 
-DEFINITIONS = _Definitions()
+DEFINITIONS = _Definitions(Path(__file__).parent)

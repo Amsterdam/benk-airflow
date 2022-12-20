@@ -30,6 +30,10 @@ env:
     value: "gob_upload"
   - name: "AIRFLOW_VAR_POD-GOB-UPLOAD-IMAGE-TAG"
     value: "latest"
+  - name: "AIRFLOW_VAR_POD-GOB-PREPARE-IMAGE-NAME"
+    value: "gob_prepare"
+  - name: "AIRFLOW_VAR_POD-GOB-PREPARE-IMAGE-TAG"
+    value: "latest"
 
   # GOB DB
   - name: "AIRFLOW_VAR_GOB-DATABASE-PASSWORD"
@@ -42,7 +46,19 @@ env:
     value: "gob"
   - name: "AIRFLOW_VAR_GOB-DATABASE-HOST-OVERRIDE"
     value: "host.docker.internal"
-  
+
+  # Prepare DB
+  - name: "AIRFLOW_VAR_GOB-PREPARE-DATABASE-PASSWORD"
+    value: "insecure"
+  - name: "AIRFLOW_VAR_GOB-PREPARE-DATABASE-USER"
+    value: "gob_prepare"
+  - name: "AIRFLOW_VAR_GOB-PREPARE-DATABASE-PORT"
+    value: "5408"
+  - name: "AIRFLOW_VAR_GOB-PREPARE-DATABASE"
+    value: "gob_prepare"
+  - name: "AIRFLOW_VAR_GOB-PREPARE-DATABASE-HOST"
+    value: "host.docker.internal"
+
   # Grondslag
   - name: "AIRFLOW_VAR_GRONDSLAG-PASSWORD"
     value: ""
@@ -85,4 +101,16 @@ env:
   - name: "AIRFLOW_VAR_OBJECTSTORE-BI-TENANTNAME"
     value: ""
   - name: "AIRFLOW_VAR_OBJECTSTORE-BI-USER"
+    value: ""
+
+  # Neuron
+  - name: "AIRFLOW_VAR_NEURON-DATABASE"
+    value: ""
+  - name: "AIRFLOW_VAR_NEURON-USER"
+    value: ""
+  - name: "AIRFLOW_VAR_NEURON-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_NEURON-HOST"
+    value: ""
+  - name: "AIRFLOW_VAR_NEURON-PORT"
     value: ""
