@@ -15,7 +15,6 @@ class TestWorkflow:
             names = ["import", "update", "compare", "upload", "apply"]
             assert all(task.name == name for task, name in zip(import_._tasks, names))
 
-
             leafs = ["apply"]
             starts = ["import"]
 

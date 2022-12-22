@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 from unittest import TestCase
-from tests.mocks import mock_definitions
+
 from benk.definitions import _Definitions
+from tests.mocks import mock_definitions
+
 
 class TestDefinitions(TestCase):
 
@@ -28,6 +30,5 @@ class TestDefinitions(TestCase):
         assert model_definition[0].json() == json.dumps(result)
 
     def test_iter_empty_folder(self):
-
         with self.assertRaises(FileNotFoundError):
             list(_Definitions(Path("/")))

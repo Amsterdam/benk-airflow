@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from benk.definitions import DEFINITIONS, _Definitions
 
 

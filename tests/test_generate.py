@@ -43,9 +43,7 @@ class TestGenerate:
                 patch("benk.workflow.Relate", MockRelateDag), \
                 patch("benk.workflow.Prepare", MockPrepareDag), \
                 patch("airflow.models.baseoperator.cross_downstream") as mock_cross_downstream:
-
             # run generate DAG
-            import benk.generate
 
             mock_dag.assert_called_with(
                 dag_id="nap",

@@ -1,5 +1,5 @@
-from unittest.mock import patch, mock_open
 from pathlib import Path
+from unittest.mock import patch
 
 from tests.mocks import mock_definitions
 
