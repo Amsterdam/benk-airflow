@@ -36,7 +36,7 @@
     {
       "collection": "ggwgebieden",
       "import": {
-        "application": "DGDialog"
+        "application": "Basisinformatie"
       },
       "relations": [
         "ligt_in_gebieden_stadsdeel",
