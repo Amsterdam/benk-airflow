@@ -4,22 +4,20 @@ python -m benk.prepare_config.update
 
 """
 
+import shutil
 from pathlib import Path
-
-import requests
 
 from benk.definitions import DEFINITIONS
 
-GITHUB_BASE_URL = "https://raw.githubusercontent.com/Amsterdam/GOB-Prepare/master"
+PREPARE_DATA_DIR = Path(__file__).parent.parent.parent / 'GOB-Prepare' / 'src' / 'data'
 
 
 def _update_for_catalogue(catalogue: str):
-    r = requests.get(
-        f'{GITHUB_BASE_URL}/src/data/{catalogue}.prepare.json')
-    r.raise_for_status()
+    fname = f'{catalogue}.prepare.json'
+    src_file = PREPARE_DATA_DIR / fname
+    dst_file = Path(__file__).parent / fname
 
-    with open(Path(__file__).parent / f'{catalogue}.prepare.json', 'w') as f:
-        f.write(r.text)
+    shutil.copyfile(src_file, dst_file)
 
 
 def update():

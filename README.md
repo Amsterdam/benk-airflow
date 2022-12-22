@@ -54,6 +54,11 @@ Some important keys:
 
 # Update prepare definitions
 
+First update the GOB-Prepare git submodule:
+
+    git submodule init
+    git submodule update
+
 Run from '''dags''' directory:
 
     python -m benk.prepare_config.update

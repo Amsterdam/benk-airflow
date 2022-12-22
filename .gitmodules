@@ -1,0 +1,3 @@
+[submodule "dags/GOB-Prepare"]
+	path = dags/GOB-Prepare
+	url = https://github.com/Amsterdam/GOB-Prepare.git
