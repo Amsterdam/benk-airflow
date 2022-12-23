@@ -4,7 +4,6 @@ from airflow.models import BaseOperator, Variable
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-
 from benk.common import NAMESPACE, TEAM_NAME
 from benk.environment import (
     DGDialogEnvironment,
