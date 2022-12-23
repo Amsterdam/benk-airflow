@@ -1,14 +1,15 @@
 from pathlib import Path
 
 import pytest
-from benk.definitions import DEFINITIONS
+
+from benk.definitions import DEFINITIONS, _Definitions
 
 
 @pytest.fixture
 def model_definition(monkeypatch):
     with monkeypatch.context():
         monkeypatch.setattr(
-            "benk.definitions._Definitions._path",
-            Path(__file__).parent / "fixtures"
+            "benk.definitions.DEFINITIONS",
+            _Definitions(Path(__file__).parent / "fixtures" / "definitions")
         )
         return list(DEFINITIONS)

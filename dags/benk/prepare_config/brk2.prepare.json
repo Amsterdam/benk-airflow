@@ -1,0 +1,343 @@
+{
+  "version": "0.1",
+  "name": "BRK2",
+  "catalogue": "brk2",
+  "source": {
+    "application": "Neuron"
+  },
+  "destination": {
+    "application": "GOBPrepare"
+  },
+  "actions": [
+    {
+      "type": "clear",
+      "schemas": [
+        "brk2",
+        "brk2_prep"
+      ],
+      "id": "clear_schemas"
+    },
+    {
+      "type": "select",
+      "source": "src",
+      "query": [
+        "         SELECT TRUNC(MAX(BSD.DATUM_AANGEMAAKT)) AS brk_bsd_toestandsdatum",
+        "         ,      'Toestandsdatum, d.i. de laatste aanmaakdatum van de BRK-berichten in de naar DIVA gerepliceerde BRK-levering.' AS omschrijving",
+        "           FROM   G0363_BRK2MON.BESTAND BSD"
+      ],
+      "query_src": "string",
+      "destination_table": {
+        "name": "brk2.bestand",
+        "create": true,
+        "columns": [
+          {
+            "name": "brk_bsd_toestandsdatum",
+            "type": "TIMESTAMP"
+          },
+          {
+            "name": "omschrijving",
+            "type": "VARCHAR(120)"
+          }
+        ]
+      },
+      "depends_on": [
+        "clear_schemas"
+      ],
+      "id": "create_bestand_table"
+    },
+    {
+      "type": "clone",
+      "source_schema": "G0363_BRK2",
+      "destination_schema": "brk2",
+      "id_columns": {
+        "_defaults": [
+          ["ID", "VOLGNUMMER"],
+          ["ID"],
+          ["CODE"],
+          ["KADASTRAALOBJECT_ID", "KADASTRAALOBJECT_VOLGNUMMER"],
+          ["ZAKELIJKRECHT_ID"],
+          ["TENAAMSTELLING_ID"],
+          ["MUTATIE_ID"]
+        ],
+        "AANTEKENING_BETROKKENPERSOON": [
+          "AANTEKENING_ID"
+        ],
+        "ADRESSEERBAAR_NEVENADRES": [
+          "ADRESSEERBAAR_OBJECT_ID"
+        ],
+        "MANDELIGHEID_ISGEBASEERDOP": [
+          "MANDELIGHEID_ID"
+        ],
+        "PUBLIEKRECHTELIJKE_GEZAG": [
+          "BEPERKING_ID"
+        ]
+      },
+      "ignore": [
+        "VERSIE"
+      ],
+      "depends_on": [
+        "clear_schemas"
+      ],
+      "id": "clone_source"
+    },
+    {
+      "type": "import_csv",
+      "source": "https://developer.kadaster.nl/schemas/waardelijsten/BurgemKadgemSectie/BurgemKadgemSectie.csv",
+      "destination": "brk2.import_burgerlijke_gemeentes",
+      "id": "import_burgerlijke_gemeentes",
+      "depends_on": [
+        "clear_schemas"
+      ]
+    },
+    {
+      "type": "execute_sql",
+      "description": "Create materialized view Baghulptabel",
+      "query_src": "file",
+      "query": "data/sql/brk2/materialized_view.baghulptabel.sql",
+      "id": "create_baghulptabel",
+      "depends_on": [
+        "clone_source"
+      ]
+    },
+    {
+      "type": "import_csv",
+      "source": "https://developer.kadaster.nl/schemas/waardelijsten/AardAantekening/AardAantekening.csv",
+      "destination": "brk2.import_aardaantekening",
+      "column_names": {
+        "Code": "code",
+        "Waarde": "omschrijving",
+        "DatumVanaf": "datum_vanaf",
+        "DatumTot": "datum_tot",
+        "Toelichting": "type"
+      },
+      "id": "import_aardaantekening_csv",
+      "depends_on": [
+        "clear_schemas"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select meta",
+      "table_name": "brk2_prep.meta",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.meta.sql",
+      "id": "select_meta",
+      "depends_on": [
+        "create_bestand_table"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select KOT",
+      "table_name": "brk2_prep.kadastraal_object",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.kadastraal_object.sql",
+      "id": "select_kot",
+      "depends_on": [
+        "clone_source",
+        "import_burgerlijke_gemeentes",
+        "create_baghulptabel"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select ZRT",
+      "table_name": "brk2_prep.zakelijk_recht",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.zakelijk_recht.sql",
+      "id": "select_zrt",
+      "depends_on": [
+        "select_kot"
+      ]
+    },
+    {
+      "type": "execute_sql",
+      "description": "Populate ZRT table with KOT references",
+      "id": "populate_zrt_with_kot",
+      "depends_on": [
+        "select_zrt"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/zrt.add_kot.sql"
+    },
+    {
+      "type": "execute_sql",
+      "description": "Create references between ZRT's on betrokken_bij and ontstaan_uit",
+      "id": "create_zrt_references",
+      "depends_on": [
+        "populate_zrt_with_kot"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/zrt.reference_ontstaan_uit_betrokken_bij.sql"
+    },
+    {
+      "type": "execute_sql",
+      "description": "KOT - Set is_ontstaan_uit_kadastraalobject",
+      "id": "set_is_ontstaan_uit_kadastraalobject",
+      "depends_on": [
+        "select_kot",
+        "populate_zrt_with_kot"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/kot.set_is_ontstaan_uit_kadastraalobject.sql"
+    },
+    {
+      "type": "execute_sql",
+      "description": "KOT - Set is_ontstaan_uit_g_perceel",
+      "id": "set_is_ontstaan_uit_g_perceel",
+      "depends_on": [
+        "select_kot",
+        "populate_zrt_with_kot"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/kot.set_is_ontstaan_uit_g_perceel.sql"
+    },
+    {
+      "type": "import_api",
+      "description": "Import BAG geometrie van verblijfsobjecten",
+      "id": "import_verblijfsobjecten_geometrie",
+      "depends_on": [
+        "set_is_ontstaan_uit_g_perceel"
+      ],
+      "query_src": "file",
+      "query": "data/api/bag/verblijfsobjecten_geometrie_import.graphql",
+      "meta_type": "bag_verblijfsobjectenRootObjectType",
+      "schema": "bag_brk2",
+      "destination": "verblijfsobjecten_geometrie"
+    },
+    {
+      "type": "execute_sql",
+      "description": "Generate geometrie voor actuele appartementsrechten",
+      "id": "update_geometrie_appartementsrechten",
+      "depends_on": [
+        "import_verblijfsobjecten_geometrie"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/kot.update_a_geometrie.sql"
+    },
+    {
+      "type": "execute_sql",
+      "description": "Remove duplicate g-perceel relations",
+      "id": "remove_duplicate_g_perceel_relations",
+      "depends_on": [
+        "update_geometrie_appartementsrechten"
+      ],
+      "query_src": "file",
+      "query": "data/sql/brk2/kot.remove_duplicate_ontstaan_uit_relations.sql"
+    },
+    {
+      "type": "create_table",
+      "description": "Select TNG",
+      "table_name": "brk2_prep.tenaamstelling",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.tenaamstelling.sql",
+      "id": "select_tng",
+      "depends_on": [
+        "create_zrt_references"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select AKT",
+      "table_name": "brk2_prep.aantekening_kadastraal_object",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.aantekening_kadastraal_object.sql",
+      "id": "select_akt",
+      "depends_on": [
+        "select_kot",
+        "import_aardaantekening_csv"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select ART",
+      "table_name": "brk2_prep.aantekening_recht",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.aantekening_recht.sql",
+      "id": "select_art",
+      "depends_on": [
+        "select_tng"
+      ]
+    },
+    {
+      "type": "execute_sql",
+      "description": "Create materialized view subject_expiration_date",
+      "id": "create_view_subject_actueel",
+      "depends_on": [
+        "select_akt",
+        "select_art",
+        "create_zrt_references"
+      ],
+      "query": "data/sql/brk2/materialized_view.subject_expiration_date.sql",
+      "query_src": "file"
+    },
+    {
+      "type": "create_table",
+      "description": "Select SJT",
+      "table_name": "brk2_prep.kadastraal_subject",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.kadastraal_subject.sql",
+      "id": "select_sjt",
+      "depends_on": [
+        "create_view_subject_actueel",
+        "select_tng",
+        "create_zrt_references"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select KSE",
+      "table_name": "brk2_prep.kadastrale_sectie",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.kadastrale_sectie.sql",
+      "id": "select_kse",
+      "depends_on": [
+        "select_kot"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select KGE",
+      "table_name": "brk2_prep.kadastrale_gemeente",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.kadastrale_gemeente.sql",
+      "id": "select_kge",
+      "depends_on": [
+        "select_kot"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select KCE",
+      "table_name": "brk2_prep.kadastrale_gemeentecode",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.kadastrale_gemeentecode.sql",
+      "id": "select_kce",
+      "depends_on": [
+        "select_kot"
+      ]
+    },
+    {
+      "type": "create_table",
+      "description": "Select SDL",
+      "table_name": "brk2_prep.stukdeel",
+      "query_src": "file",
+      "query": "data/sql/brk2/select.stukdeel.sql",
+      "id": "select_sdl",
+      "depends_on": [
+        "select_art",
+        "select_akt",
+        "select_tng",
+        "select_zrt"
+      ]
+    },
+    {
+      "type": "publish_schemas",
+      "id": "publish_schemas",
+      "publish_schemas": {
+        "brk2_prep": "brk2_prepared"
+      },
+      "depends_on": "*"
+    }
+  ]
+}

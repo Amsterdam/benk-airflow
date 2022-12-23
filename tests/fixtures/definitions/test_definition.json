@@ -1,5 +1,6 @@
 {
   "catalog": "nap",
+  "prepare": true,
   "collections": [
     {
       "collection": "peilmerken",
@@ -7,7 +8,8 @@
         "application": "Grondslag"
       },
       "relations": [
-        "ligt_in_gebieden_bouwblok"
+        "relation_attribute_1",
+        "relation_attribute_2"
       ]
     }
   ]

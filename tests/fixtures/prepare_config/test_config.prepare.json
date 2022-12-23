@@ -1,0 +1,57 @@
+{
+  "version": "0.1",
+  "name": "TEST",
+  "catalogue": "test",
+  "source": {
+    "application": "Neuron"
+  },
+  "destination": {
+    "application": "GOBPrepare"
+  },
+  "actions": [
+    {
+      "type": "first_action",
+      "id": "action1"
+    },
+    {
+      "type": "another_first_action",
+      "id": "action1b"
+    },
+    {
+      "type": "some_action",
+      "depends_on": [
+        "action1"
+      ],
+      "id": "action2"
+    },
+    {
+      "type": "other_action",
+      "depends_on": [
+        "action1",
+        "action2",
+        "action1b"
+      ],
+      "id": "action3"
+    },
+    {
+      "type": "action",
+      "depends_on": [
+        "action2",
+        "action3"
+      ],
+      "id": "action4"
+    },
+    {
+      "type": "action",
+      "depends_on": [
+        "action3"
+      ],
+      "id": "action5"
+    },
+    {
+      "type": "finalaction",
+      "depends_on": "*",
+      "id": "action6"
+    }
+  ]
+}

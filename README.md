@@ -51,3 +51,16 @@ Some important keys:
 - GOB-IMPORT/UPLOAD-IMAGE-TAG: develop, or another branch name.
 - GOB-IMPORT/UPLOAD-IMAGE-NAME: datapunt/gob_import, datapunt/gob_upload.
 - GOB-SHARED-STORAGE-CLAIM: name of shared storage claim as given bij DaVe.
+
+# Update prepare definitions
+
+First update the GOB-Prepare git submodule:
+
+    git submodule init
+    git submodule update
+
+Run from '''dags''' directory:
+
+    python -m benk.prepare_config.update
+
+This fetches the last versions of the prepare definitions from GitHub for the definitions marked with prepare: true

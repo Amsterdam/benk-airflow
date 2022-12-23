@@ -8,7 +8,7 @@ ignore =
     D100
     # line break before binary operator
     W503
-max-line-length = 88
+max-line-length = 120
 exclude =
     .git,
     __pycache__,

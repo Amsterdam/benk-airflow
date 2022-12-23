@@ -87,3 +87,29 @@ class ObjectStoreBasisInformatieEnvironment(OperatorEnvironment):
     BASISINFORMATIE_OBJECTSTORE_PASSWORD = Variable.get("objectstore-bi-password")
     BASISINFORMATIE_OBJECTSTORE_TENANT_NAME = Variable.get("objectstore-bi-tenantname")
     BASISINFORMATIE_OBJECTSTORE_USER = Variable.get("objectstore-bi-user")
+
+
+class NeuronDatabaseEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the Neuron database."""
+
+    NRBIN_DATABASE = Variable.get("neuron-database")
+    NRBIN_DATABASE_HOST = Variable.get("neuron-host")
+    NRBIN_DATABASE_PASSWORD = Variable.get("neuron-password")
+    NRBIN_DATABASE_PORT = Variable.get("neuron-port")
+    NRBIN_DATABASE_USER = Variable.get("neuron-user")
+
+
+class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the GOB Prepare database."""
+
+    GOB_PREPARE_DATABASE = Variable.get("gob-prepare-database")
+    GOB_PREPARE_DATABASE_HOST = Variable.get("gob-prepare-database-host")
+    GOB_PREPARE_DATABASE_PASSWORD = Variable.get("gob-prepare-database-password")
+    GOB_PREPARE_DATABASE_PORT = Variable.get("gob-prepare-database-port")
+    GOB_PREPARE_DATABASE_USER = Variable.get("gob-prepare-database-user")
+
+
+class PrepareServiceEnvironment(NeuronDatabaseEnvironment, GOBPrepareDatabaseEnvironment):
+    """All settings needed for the Prepare service to run."""
+
+    pass
