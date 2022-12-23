@@ -510,7 +510,7 @@ def conset(item_type: Type[T], *, min_items: int = None, max_items: int = None) 
     # __args__ is needed to conform to typing generics api
     namespace = {'min_items': min_items, 'max_items': max_items, 'item_type': item_type, '__args__': [item_type]}
     # We use new_class to be able to deal with Generic types
-    return new_class('ConstrainedSetValue', (ConstrainedSet,), {}, lambda ns: ns._update(namespace))
+    return new_class('ConstrainedSetValue', (ConstrainedSet,), {}, lambda ns: ns.update(namespace))
 
 
 # This types superclass should be FrozenSet[T], but cython chokes on that...
@@ -552,7 +552,7 @@ def confrozenset(item_type: Type[T], *, min_items: int = None, max_items: int = 
     # __args__ is needed to conform to typing generics api
     namespace = {'min_items': min_items, 'max_items': max_items, 'item_type': item_type, '__args__': [item_type]}
     # We use new_class to be able to deal with Generic types
-    return new_class('ConstrainedFrozenSetValue', (ConstrainedFrozenSet,), {}, lambda ns: ns._update(namespace))
+    return new_class('ConstrainedFrozenSetValue', (ConstrainedFrozenSet,), {}, lambda ns: ns.update(namespace))
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST TYPES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -611,7 +611,7 @@ def conlist(
         min_items=min_items, max_items=max_items, unique_items=unique_items, item_type=item_type, __args__=(item_type,)
     )
     # We use new_class to be able to deal with Generic types
-    return new_class('ConstrainedListValue', (ConstrainedList,), {}, lambda ns: ns._update(namespace))
+    return new_class('ConstrainedListValue', (ConstrainedList,), {}, lambda ns: ns.update(namespace))
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PYOBJECT TYPE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
