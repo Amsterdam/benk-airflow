@@ -1,0 +1,47 @@
+{
+  "catalog": "meetbouten",
+  "collections": [
+    {
+      "collection": "meetbouten",
+      "import": {
+        "application": "Grondslag"
+      },
+      "relations": [
+        "ligt_in_gebieden_bouwblok",
+        "ligt_in_gebieden_buurt",
+        "ligt_in_gebieden_stadsdeel"
+      ]
+    },
+    {
+      "collection": "metingen",
+      "import": {
+        "application": "Grondslag"
+      },
+      "relations": [
+        "hoort_bij_meetbouten_meetbout",
+        "refereert_aan_meetbouten_referentiepunten"
+      ]
+    },
+    {
+      "collection": "referentiepunten",
+      "import": {
+        "application": "Grondslag"
+      },
+      "relations": [
+        "ligt_in_gebieden_bouwblok",
+        "ligt_in_gebieden_buurt",
+        "ligt_in_gebieden_stadsdeel",
+        "is_nap_peilmerk"
+      ]
+    },
+    {
+      "collection": "rollagen",
+      "import": {
+        "application": "Basisinformatie"
+      },
+      "relations": [
+        "is_gemeten_van_gebieden_bouwblok"
+      ]
+    }
+  ]
+}
