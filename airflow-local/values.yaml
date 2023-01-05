@@ -15,7 +15,11 @@ dags:
 images:
   airflow:
     # default is python3.7
-    tag: 2.4.2-python3.9
+    tag: 2.4.3-python3.9
+
+config:
+  webserver:
+    expose_config: 'True'  # by default this is 'False'
 
 # Prefixed with AIRFLOW_VAR_ and UPPERcased
 env:
