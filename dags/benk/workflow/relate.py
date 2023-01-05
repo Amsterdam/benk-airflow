@@ -1,89 +1,101 @@
 from airflow.models.baseoperator import BaseOperator, chain
-from benk.workflow.workflow import BaseDAG, UploadArgs
+from benk.workflow.workflow import BaseDAG, UploadArgs, XCom
 
 
 class Relate(BaseDAG):
     """Holds the tasks to build a Relate DAG."""
+
+    XCOM_MAPPER = {
+        "process": "prepare",
+        "update": "process",
+        "apply": "update",
+        "update_view": "apply",
+        "check": "update_view"
+    }
 
     def __init__(self, catalogue: str, collection: str, attribute: str):
         self.catalogue = catalogue
         self.collection = collection
         self.attribute = attribute
 
-        self.id = f"relate_{catalogue}_{collection}_{attribute}"
         self._tasks: list[BaseOperator] = []
         self._init()
 
+    @property
+    def id(self) -> str:
+        return f"relate_{self.catalogue}_{self.collection}_{self.attribute}"
+
     def _prepare(self):
+        name = "prepare"
         return self.Operator(
-            task_id=f"{self.id}-prepare",
-            name="prepare",
+            name=name,
+            task_id=self.get_taskid(name),
             arguments=[
                 "relate_prepare",
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
                 f"--attribute={self.attribute}",
             ],
-            **UploadArgs,
+            **UploadArgs
         )
 
     def _process(self):
+        name = "process"
         return self.Operator(
-            task_id=f"{self.id}-process",
-            name="process",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('prepare')) }}",
-                "relate_process",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "relate_process"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _update(self):
+        name = "update"
         return self.Operator(
-            task_id=f"{self.id}-update",
-            name="update",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('process')) }}",
-                "full_update",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "full_update"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _apply(self):
+        name = "apply"
         return self.Operator(
-            task_id=f"{self.id}-apply",
-            name="apply",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('update')) }}",
-                "apply",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "apply"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _update_view(self):
+        name = "update_view"
         return self.Operator(
-            task_id=f"{self.id}-update_view",
-            name="update_view",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('apply')) }}",
-                "relate_update_view",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "relate_update_view"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _check(self):
+        name = "check"
         return self.Operator(
-            task_id=f"{self.id}-check",
-            name="check",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('update_view')) }}",
-                "relate_check",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "relate_check"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 

@@ -1,77 +1,88 @@
 from airflow.models.baseoperator import BaseOperator, chain
-from benk.workflow.workflow import BaseDAG, ImportArgs, UploadArgs
+from benk.workflow.workflow import BaseDAG, ImportArgs, UploadArgs, XCom
 
 
 class Import(BaseDAG):
     """Holds the tasks to build an Import DAG."""
+
+    XCOM_MAPPER = {
+        "compare": "import",
+        "upload": "compare",
+        "apply": "upload"
+    }
 
     def __init__(self, catalogue: str, collection: str, application: str):
         self.catalogue = catalogue
         self.collection = collection
         self.application = application
 
-        self.id = f"import_{catalogue}_{collection}_{application}"
         self._tasks: list[BaseOperator] = []
         self._init()
 
+    @property
+    def id(self) -> str:
+        return f"import_{self.catalogue}_{self.collection}_{self.application}"
+
     def _import(self):
+        name = "import"
         return self.Operator(
-            task_id=f"{self.id}-import",
-            name="import",  # required
+            name=name,  # = podname + random suffix
+            task_id=self.get_taskid(name),
             arguments=[
                 "import",
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
                 f"--application={self.application}",
             ],
-            **ImportArgs,
+            **ImportArgs
         )
 
     def _update(self):
+        name = "update"
         return self.Operator(
-            task_id=f"{self.id}-update",
-            name="update",
+            name=name,
+            task_id=self.get_taskid(name),
             arguments=[
                 "apply",
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
             ],
-            **UploadArgs,
+            **UploadArgs
         )
 
     def _compare(self):
+        name = "compare"
         return self.Operator(
-            task_id=f"{self.id}-compare",
-            name="compare",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('import')) }}",
-                "compare",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "compare"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _upload(self):
+        name = "upload"
         return self.Operator(
-            task_id=f"{self.id}-upload",
-            name="upload",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('compare')) }}",
-                "full_update",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "full_update"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
     def _apply(self):
+        name = "apply"
         return self.Operator(
-            task_id=f"{self.id}-apply",
-            name="apply",
-            arguments=[
-                "--message-data",
-                "{{ json.dumps(task_instance.xcom_pull('upload')) }}",
-                "apply",
-            ],
+            name=name,
+            task_id=self.get_taskid(name),
+            arguments=["--message-data", XCom.get_template(), "apply"],
+            params=XCom.get_param(
+                self.get_taskid(self.XCOM_MAPPER[name])
+            ),
             **UploadArgs,
         )
 
