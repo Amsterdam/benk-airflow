@@ -23,6 +23,7 @@ class Relate(BaseDAG):
 
     @property
     def id(self) -> str:
+        """Return Id of the relate DAG."""
         return f"relate_{self.catalogue}_{self.collection}_{self.attribute}"
 
     def _prepare(self):

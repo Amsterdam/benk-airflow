@@ -92,6 +92,7 @@ ImportArgs = dict(
 class XCom:
     """
     Class containing XCom logic.
+
     Pass XCOM_MESSAGE_DATA_TEMPLATE to a templated Operator field and use XCOM_PARAM_KEY in params field.
     """
 
@@ -100,10 +101,16 @@ class XCom:
 
     @classmethod
     def get_param(cls, task_id: str) -> dict[str, str]:
+        """Return dict to be used in params argument of an operator."""
         return {cls._PARAM_KEY: task_id}
 
     @classmethod
     def get_template(cls) -> str:
+        """
+        Return template to be used in a templated argument of an operator.
+
+        Examples: params, arguments, cmd
+        """
         return cls._TEMPLATE
 
 
@@ -125,7 +132,9 @@ class BaseDAG:
     @property
     @abstractmethod
     def id(self) -> str:
-        pass
+        """Return Id of the implemented DAG."""
+        pass  # pragma: no cover
 
     def get_taskid(self, name: str) -> str:
+        """Return task_id based on id and name."""
         return f"{self.id}-{name}"

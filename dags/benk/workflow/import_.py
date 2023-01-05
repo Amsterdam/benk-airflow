@@ -21,6 +21,7 @@ class Import(BaseDAG):
 
     @property
     def id(self) -> str:
+        """Return Id of import DAG."""
         return f"import_{self.catalogue}_{self.collection}_{self.application}"
 
     def _import(self):
