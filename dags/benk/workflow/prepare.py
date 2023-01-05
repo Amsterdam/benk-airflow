@@ -32,6 +32,7 @@ class Prepare(BaseDAG):
 
     @property
     def id(self) -> str:
+        """Return Id of the prepare DAG."""
         return f"prepare_{self.catalogue}"
 
     def _prepare_task_operator(self, action_id: str):
