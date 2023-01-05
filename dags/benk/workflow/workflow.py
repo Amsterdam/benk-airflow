@@ -89,10 +89,28 @@ ImportArgs = dict(
 )
 
 
+class XCom:
+    """
+    Class containing XCom logic.
+    Pass XCOM_MESSAGE_DATA_TEMPLATE to a templated Operator field and use XCOM_PARAM_KEY in params field.
+    """
+
+    _PARAM_KEY = "xcom_task_id"
+    _TEMPLATE = "{{ json.dumps(task_instance.xcom_pull('{}'.format(params.xcom_task_id))) }}"
+
+    @classmethod
+    def get_param(cls, task_id: str) -> dict[str, str]:
+        return {cls._PARAM_KEY: task_id}
+
+    @classmethod
+    def get_template(cls) -> str:
+        return cls._TEMPLATE
+
+
 class BaseDAG:
     """Base DAG abstraction."""
 
-    Operator: KubernetesPodOperator = KubernetesPodOperator
+    Operator = KubernetesPodOperator
 
     @abstractmethod
     def get_leaf_nodes(self) -> list[BaseOperator]:
@@ -103,3 +121,11 @@ class BaseDAG:
     def get_start_nodes(self) -> list[BaseOperator]:
         """Return the start nodes of this DAG. Used to link this DAG to other DAGs."""
         pass  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        pass
+
+    def get_taskid(self, name: str) -> str:
+        return f"{self.id}-{name}"

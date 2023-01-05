@@ -31,6 +31,7 @@ class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers."""
 
     GOB_SHARED_DIR = Variable.get("GOB-SHARED-DIR", "/app/shared")
+    REPO_BASE = Variable.get("REPO_BASE")
 
 
 class GOBEnvironment(OperatorEnvironment):

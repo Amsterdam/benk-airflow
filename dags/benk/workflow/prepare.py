@@ -24,12 +24,15 @@ class Prepare(BaseDAG):
     def __init__(self, catalogue: str):
         self.catalogue = catalogue
 
-        self.id = f"prepare_{catalogue}"
         self._tasks: list[BaseOperator] = []
         self._leaf_nodes: list[BaseOperator] = []
         self._start_nodes: list[BaseOperator] = []
 
         self._init()
+
+    @property
+    def id(self) -> str:
+        return f"prepare_{self.catalogue}"
 
     def _prepare_task_operator(self, action_id: str):
         return self.Operator(
