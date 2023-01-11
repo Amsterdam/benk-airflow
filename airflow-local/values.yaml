@@ -118,3 +118,15 @@ env:
     value: ""
   - name: "AIRFLOW_VAR_NEURON-PORT"
     value: ""
+
+  # Decos
+  - name: "AIRFLOW_VAR_DECOS-DATABASE"
+    value: ""
+  - name: "AIRFLOW_VAR_DECOS-USER"
+    value: ""
+  - name: "AIRFLOW_VAR_DECOS-PASSWORD"
+    value: ""
+  - name: "AIRFLOW_VAR_DECOS-HOST"
+    value: ""
+  - name: "AIRFLOW_VAR_DECOS-PORT"
+    value: ""

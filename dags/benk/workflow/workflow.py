@@ -6,6 +6,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from benk.common import NAMESPACE, TEAM_NAME
 from benk.environment import (
+    DecosDatabaseEnvironment,
     DGDialogEnvironment,
     GenericEnvironment,
     GOBEnvironment,
@@ -84,6 +85,8 @@ ImportArgs = dict(
         + GrondslagEnvironment().env_vars()
         + DGDialogEnvironment().env_vars()
         + ObjectStoreBasisInformatieEnvironment().env_vars()
+        + NeuronDatabaseEnvironment().env_vars()
+        + DecosDatabaseEnvironment().env_vars()
     ),
     **operator_default_args,
 )
