@@ -100,6 +100,16 @@ class NeuronDatabaseEnvironment(OperatorEnvironment):
     NRBIN_DATABASE_USER = Variable.get("neuron-user")
 
 
+class DecosDatabaseEnvironment(OperatorEnvironment):
+    """Settings and secrets to connect to the Neuron database."""
+
+    BINF_DATABASE = Variable.get("decos-database")
+    BINF_DATABASE_HOST = Variable.get("decos-host")
+    BINF_DATABASE_PASSWORD = Variable.get("decos-password")
+    BINF_DATABASE_PORT = Variable.get("decos-port")
+    BINF_DATABASE_USER = Variable.get("decos-user")
+
+
 class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the GOB Prepare database."""
 
