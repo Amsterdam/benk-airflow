@@ -1,0 +1,120 @@
+{
+  "catalog": "bag",
+  "collections": [
+    {
+      "collection": "brondocumenten",
+      "import": {
+        "application": "Decos"
+      },
+      "relations": []
+    },
+    {
+      "collection": "dossiers",
+      "import": {
+        "application": "Decos"
+      },
+      "relations": [
+        "heeft_brondocumenten"
+      ]
+    },
+    {
+      "collection": "ligplaatsen",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "heeft_hoofdadres",
+        "heeft_nevenadres",
+        "ligt_in_buurt",
+        "heeft_dossier",
+        "ligt_in_gemeente"
+      ]
+    },
+    {
+      "collection": "nummeraanduidingen",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "ligt_aan_openbareruimte",
+        "adresseert_verblijfsobject",
+        "adresseert_ligplaats",
+        "adresseert_standplaats",
+        "ligt_in_woonplaats",
+        "heeft_dossier"
+      ]
+    },
+    {
+      "collection": "onderzoeken",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": []
+    },
+    {
+      "collection": "openbareruimtes",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "ligt_in_woonplaats",
+        "heeft_dossier"
+      ]
+    },
+    {
+      "collection": "panden",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "ligt_in_bouwblok",
+        "ligt_in_buurt",
+        "heeft_dossier"
+      ]
+    },
+    {
+      "collection": "standplaatsen",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "heeft_hoofdadres",
+        "heeft_nevenadres",
+        "ligt_in_buurt",
+        "heeft_dossier",
+        "ligt_in_gemeente"
+      ]
+    },
+    {
+      "collection": "verblijfsobjecten",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "heeft_hoofdadres",
+        "heeft_nevenadres",
+        "ligt_in_panden",
+        "ligt_in_buurt",
+        "heeft_dossier",
+        "ligt_in_gemeente"
+      ]
+    },
+    {
+      "collection": "woonplaatsen",
+      "import": {
+        "application": "Neuron"
+      },
+      "relations": [
+        "heeft_onderzoeken",
+        "heeft_dossier",
+        "ligt_in_gemeente"
+      ]
+    }
+  ]
+}
