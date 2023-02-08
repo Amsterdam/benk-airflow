@@ -2,12 +2,12 @@ import json
 from datetime import datetime
 
 from airflow import DAG
-from airflow.models.baseoperator import cross_downstream
+from airflow.models.baseoperator import chain, cross_downstream
 
 from benk.common import BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
-from benk.workflow import Import, Prepare, Relate
+from benk.workflow import Import, Initialise, Prepare, Relate
 
 for definition in DEFINITIONS:
     name = definition.catalog
@@ -22,6 +22,8 @@ for definition in DEFINITIONS:
         catchup=False,
         start_date=datetime.utcnow(),
     ):
+        initialise = Initialise()
+
         imports = []
         relates = []
         for collection in definition.collections:
@@ -30,6 +32,9 @@ for definition in DEFINITIONS:
             relates += [
                 Relate(definition.catalog, collection.collection, relation) for relation in collection.relations
             ]
+
+        # Start with initialising / migrating before imports
+        chain(*initialise.get_leaf_nodes(), flatten_list([i.get_start_nodes() for i in imports]))
 
         # Link imports to relates
         cross_downstream(
@@ -40,4 +45,4 @@ for definition in DEFINITIONS:
             prepare = Prepare(definition.catalog)
 
             # Add Prepare
-            cross_downstream(prepare.get_leaf_nodes(), flatten_list([i.get_start_nodes() for i in imports]))
+            chain(prepare.get_leaf_nodes(), *initialise.get_start_nodes())
