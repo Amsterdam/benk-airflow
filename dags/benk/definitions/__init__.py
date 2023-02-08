@@ -31,7 +31,6 @@ class _Model(BaseModel):
 
 
 class _Definitions:
-
     def __init__(self, path: Path):
         self._path = path
 

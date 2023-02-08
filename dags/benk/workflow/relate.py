@@ -1,4 +1,5 @@
 from airflow.models.baseoperator import BaseOperator, chain
+
 from benk.workflow.workflow import BaseDAG, UploadArgs, XCom
 
 
@@ -10,7 +11,7 @@ class Relate(BaseDAG):
         "update": "process",
         "apply": "update",
         "update_view": "apply",
-        "check": "update_view"
+        "check": "update_view",
     }
 
     def __init__(self, catalogue: str, collection: str, attribute: str):
@@ -37,7 +38,7 @@ class Relate(BaseDAG):
                 f"--collection={self.collection}",
                 f"--attribute={self.attribute}",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     def _process(self):
@@ -46,9 +47,7 @@ class Relate(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "relate_process"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -58,9 +57,7 @@ class Relate(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "full_update"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -70,9 +67,7 @@ class Relate(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "apply"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -82,9 +77,7 @@ class Relate(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "relate_update_view"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -94,9 +87,7 @@ class Relate(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "relate_check"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -107,7 +98,7 @@ class Relate(BaseDAG):
             self._update(),
             self._apply(),
             self._update_view(),
-            self._check()
+            self._check(),
         ]
         chain(*self._tasks)
 

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
+
 from benk.common import BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
@@ -12,14 +13,14 @@ for definition in DEFINITIONS:
     name = definition.catalog
 
     with DAG(
-            dag_id=name,
-            tags=[name],
-            default_args=BaseOperaterArgs,
-            template_searchpath=["/"],
-            user_defined_macros={"json": json},
-            schedule_interval=None,
-            catchup=False,
-            start_date=datetime.utcnow(),
+        dag_id=name,
+        tags=[name],
+        default_args=BaseOperaterArgs,
+        template_searchpath=["/"],
+        user_defined_macros={"json": json},
+        schedule_interval=None,
+        catchup=False,
+        start_date=datetime.utcnow(),
     ):
 
         imports = []
@@ -33,15 +34,11 @@ for definition in DEFINITIONS:
 
         # Link imports to relates
         cross_downstream(
-            flatten_list([i.get_leaf_nodes() for i in imports]),
-            flatten_list([r.get_start_nodes() for r in relates])
+            flatten_list([i.get_leaf_nodes() for i in imports]), flatten_list([r.get_start_nodes() for r in relates])
         )
 
         if definition.prepare:
             prepare = Prepare(definition.catalog)
 
             # Add Prepare
-            cross_downstream(
-                prepare.get_leaf_nodes(),
-                flatten_list([i.get_start_nodes() for i in imports])
-            )
+            cross_downstream(prepare.get_leaf_nodes(), flatten_list([i.get_start_nodes() for i in imports]))

@@ -9,11 +9,11 @@ from pathlib import Path
 
 from benk.definitions import DEFINITIONS
 
-PREPARE_DATA_DIR = Path(__file__).parent.parent.parent / 'GOB-Prepare' / 'src' / 'data'
+PREPARE_DATA_DIR = Path(__file__).parent.parent.parent / "GOB-Prepare" / "src" / "data"
 
 
 def _update_for_catalogue(catalogue: str):
-    fname = f'{catalogue}.prepare.json'
+    fname = f"{catalogue}.prepare.json"
     src_file = PREPARE_DATA_DIR / fname
     dst_file = Path(__file__).parent / fname
 

@@ -1,15 +1,12 @@
 from airflow.models.baseoperator import BaseOperator, chain
+
 from benk.workflow.workflow import BaseDAG, ImportArgs, UploadArgs, XCom
 
 
 class Import(BaseDAG):
     """Holds the tasks to build an Import DAG."""
 
-    XCOM_MAPPER = {
-        "compare": "import",
-        "upload": "compare",
-        "apply": "upload"
-    }
+    XCOM_MAPPER = {"compare": "import", "upload": "compare", "apply": "upload"}
 
     def __init__(self, catalogue: str, collection: str, application: str):
         self.catalogue = catalogue
@@ -35,7 +32,7 @@ class Import(BaseDAG):
                 f"--collection={self.collection}",
                 f"--application={self.application}",
             ],
-            **ImportArgs
+            **ImportArgs,
         )
 
     def _update(self):
@@ -48,7 +45,7 @@ class Import(BaseDAG):
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
             ],
-            **UploadArgs
+            **UploadArgs,
         )
 
     def _compare(self):
@@ -57,9 +54,7 @@ class Import(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "compare"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -69,9 +64,7 @@ class Import(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "full_update"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
@@ -81,20 +74,12 @@ class Import(BaseDAG):
             name=name,
             task_id=self.get_taskid(name),
             arguments=["--message-data", XCom.get_template(), "apply"],
-            params=XCom.get_param(
-                self.get_taskid(self.XCOM_MAPPER[name])
-            ),
+            params=XCom.get_param(self.get_taskid(self.XCOM_MAPPER[name])),
             **UploadArgs,
         )
 
     def _init(self):
-        self._tasks = [
-            self._import(),
-            self._update(),
-            self._compare(),
-            self._upload(),
-            self._apply()
-        ]
+        self._tasks = [self._import(), self._update(), self._compare(), self._upload(), self._apply()]
         chain(*self._tasks)
 
     def get_leaf_nodes(self) -> list[BaseOperator]:

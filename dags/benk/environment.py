@@ -20,11 +20,7 @@ class OperatorEnvironment:
                 return False
             return True
 
-        return [
-            V1EnvVar(name=k, value=getattr(self, k))
-            for k in dir(self)
-            if _is_env_var(k)
-        ]
+        return [V1EnvVar(name=k, value=getattr(self, k)) for k in dir(self) if _is_env_var(k)]
 
 
 class GenericEnvironment(OperatorEnvironment):
@@ -46,9 +42,7 @@ class GOBEnvironment(OperatorEnvironment):
     DATABASE_USER = Variable.get("gob-database-user", "gob")
     DATABASE_NAME = Variable.get("gob-database-name", "gob")
     DATABASE_PASSWORD = Variable.get("gob-database-password")
-    DATABASE_HOST_OVERRIDE = Variable.get(
-        "gob-database-host-override", "host.docker.internal"
-    )
+    DATABASE_HOST_OVERRIDE = Variable.get("gob-database-host-override", "host.docker.internal")
     DATABASE_PORT_OVERRIDE = Variable.get("gob-database-port-override", "5406")
 
 
