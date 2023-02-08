@@ -22,7 +22,6 @@ for definition in DEFINITIONS:
         catchup=False,
         start_date=datetime.utcnow(),
     ):
-
         imports = []
         relates = []
         for collection in definition.collections:
