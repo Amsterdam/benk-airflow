@@ -35,9 +35,11 @@ steps:
   displayName: 'Run MyPy'
 
 - script: >
-    coverage run --source=dags/benk -m pytest --junitxml=junit/test-results.xml 
+    export COVERAGE_FILE="/tmp/.coverage"
+    && coverage run --source=dags/benk -m pytest --junitxml=junit/test-results.xml 
     && coverage xml --fail-under=100
-  displayName: 'Run PyTest'
+    && coverage report --fail-under=100 --show-missing
+  displayName: 'Run PyTest + Coverage'
 
 - script: black --check --diff dags/benk
   displayName: 'Run Black'
