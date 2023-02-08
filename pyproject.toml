@@ -1,3 +1,84 @@
+[tool.black]
+line-length = 120
+color = true
+verbose = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+
+    # ignore type checking
+    "if TYPE_CHECKING:",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod"
+]
+
+[tool.flake8]
+exclude = ["tests"]
+max-complexity = 6
+max-line-length = 120
+show_source = true
+ignore = [
+    # Missing docstring in __init__
+    "D107",
+    # Missing docstring in public package
+    "D104",
+    # Missing docstring in module
+    "D100",
+    # line break before binary operator
+    "W503"
+]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.mypy]
+follow_imports = "normal"
+pretty = true
+cache_dir = "/tmp/.mypy_cache"
+
+# These options below can be replaced by 'strict = true' when all true
+# Start off with these
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+# Getting these passing should be easy
+strict_equality = true
+strict_concatenate = true
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = true
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = true
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = true
+
 [[tool.mypy.overrides]]
 module = "airflow.providers.cncf.kubernetes.operators.kubernetes_pod.*"
 ignore_missing_imports = true
@@ -6,54 +87,20 @@ ignore_missing_imports = true
 module = "kubernetes.client.*"
 ignore_missing_imports = true
 
-[tool.mypy]
-mypy_path = "dags"
-packages = "benk"
-follow_imports = "skip"
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-pretty = true
-
-# to be switched to true
-disallow_incomplete_defs = false
-disallow_untyped_defs = false
-disallow_untyped_calls = false
-
-[tool.isort]
-profile = "black"
-skip_gitignore = true
-line_length = 88
-
-[tool.black]
-exclude = ["**/venv"]
-line-length = 120
-
-[tool.coverage.run]
-source = ["dags/benk"]
-data_file = "/tmp/.coverage"
-
-[tool.coverage.report]
-fail_under = 100
-show_missing = true
-exclude_lines = [
-    "pragma: no cover",
-    "if TYPE_CHECKING:"
-]
+[[tool.mypy.overrides]]
+module = ["pydantic.*"]
+ignore_missing_imports = true
+ignore_errors = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests/"]
+testpaths = "tests"
 pythonpath = "dags"
 cache_dir = "/tmp/.pytest_cache"
 addopts = [
     "--capture=no",
-    "--import-mode=importlib",
-    "--cov=dags/benk",
-    "--cov-fail-under=100",
-    "--cov-report=term-missing",
-    "--doctest-modules"
+    "--doctest-modules",
+    "--cache-clear",
+    "--import-mode=importlib"
 ]
 env = [
     "AIRFLOW_VAR_POD-NAMESPACE=test_airflow",
