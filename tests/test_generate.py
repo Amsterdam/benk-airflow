@@ -33,16 +33,24 @@ class MockPrepareDag(MockDag):
     type = "prepare"
 
 
+class MockInitialiseDag(MockDag):
+    type = "initialise"
+
+
 @patch("airflow.models.Variable", mock_get_variable)
 class TestGenerate:
 
     @freeze_time("2022-12-05")
     def test_generate(self, model_definition):
-        with patch("airflow.DAG") as mock_dag, \
-                patch("benk.workflow.Import", MockImportDag), \
-                patch("benk.workflow.Relate", MockRelateDag), \
-                patch("benk.workflow.Prepare", MockPrepareDag), \
-                patch("airflow.models.baseoperator.cross_downstream") as mock_cross_downstream:
+        with (
+            patch("airflow.DAG") as mock_dag,
+            patch("benk.workflow.Import", MockImportDag),
+            patch("benk.workflow.Relate", MockRelateDag),
+            patch("benk.workflow.Prepare", MockPrepareDag),
+            patch("benk.workflow.Initialise", MockInitialiseDag),
+            patch("airflow.models.baseoperator.cross_downstream") as mock_cross_downstream,
+            patch("airflow.models.baseoperator.chain") as mock_chain
+        ):
 
             # run generate DAG
             import benk.generate
@@ -58,8 +66,12 @@ class TestGenerate:
                 start_date=datetime.utcnow(),
             )
 
+            mock_chain.assert_has_calls([
+                call('initialise-', ['import-nap_peilmerken_Grondslag']),
+                call(['prepare-nap'], 'initialise-')
+            ])
+
             mock_cross_downstream.assert_has_calls([
                 call(["import-nap_peilmerken_Grondslag"],
                      ["relate-nap_peilmerken_relation_attribute_1", "relate-nap_peilmerken_relation_attribute_2"]),
-                call(["prepare-nap"], ["import-nap_peilmerken_Grondslag"]),
             ])
