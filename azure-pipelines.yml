@@ -35,15 +35,16 @@ steps:
   displayName: 'Run MyPy'
 
 - script: >
-    python -m pytest
-    --junitxml=junit/test-results.xml 
-    --cov-report=xml
-  displayName: 'Run PyTest'
+    export COVERAGE_FILE="/tmp/.coverage"
+    && coverage run --source=dags/benk -m pytest --junitxml=junit/test-results.xml 
+    && coverage xml --fail-under=100
+    && coverage report --fail-under=100 --show-missing
+  displayName: 'Run PyTest + Coverage'
 
-- script: black --check dags/benk
+- script: black --check --diff dags/benk
   displayName: 'Run Black'
 
-- script: isort --check --diff dags/benk
+- script: isort --check --diff --src-path=dags/benk dags/benk
   displayName: 'Run iSort'
 
 - script: flake8 dags/benk

@@ -1,8 +1,4 @@
-from kubernetes.client import (
-    V1PersistentVolumeClaimVolumeSource,
-    V1Volume,
-    V1VolumeMount,
-)
+from kubernetes.client import V1PersistentVolumeClaimVolumeSource, V1Volume, V1VolumeMount
 
 
 class Volume:
@@ -16,9 +12,7 @@ class Volume:
     @property
     def v1mount(self) -> V1VolumeMount:
         """Return volume mount used in a KubernetesPodOperator."""
-        return V1VolumeMount(
-            name=self.name, mount_path=self.path, sub_path=None, read_only=False
-        )
+        return V1VolumeMount(name=self.name, mount_path=self.path, sub_path=None, read_only=False)
 
     @property
     def v1volume(self) -> V1Volume:

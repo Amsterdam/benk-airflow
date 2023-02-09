@@ -1,9 +1,8 @@
 from abc import abstractmethod
 
 from airflow.models import BaseOperator, Variable
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
-)
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+
 from benk.common import NAMESPACE, TEAM_NAME
 from benk.environment import (
     DecosDatabaseEnvironment,
@@ -46,7 +45,7 @@ ImportImage = Image(
 
 PrepareImage = Image(
     name=Variable.get("pod-gob-prepare-image-name", default_var="gob_prepare"),
-    tag=Variable.get("pod-gob-prepare-image-tag", default_var="latest")
+    tag=Variable.get("pod-gob-prepare-image-tag", default_var="latest"),
 )
 
 PrepareArgs = dict(
