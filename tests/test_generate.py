@@ -49,7 +49,6 @@ class TestGenerate:
             patch("benk.workflow.Prepare", MockPrepareDag),
             patch("benk.workflow.Initialise", MockInitialiseDag),
             patch("airflow.models.baseoperator.cross_downstream") as mock_cross_downstream,
-            patch("airflow.models.baseoperator.chain") as mock_chain
         ):
 
             # run generate DAG
@@ -66,12 +65,9 @@ class TestGenerate:
                 start_date=datetime.utcnow(),
             )
 
-            mock_chain.assert_has_calls([
-                call('initialise-', ['import-nap_peilmerken_Grondslag']),
-                call(['prepare-nap'], 'initialise-')
-            ])
-
             mock_cross_downstream.assert_has_calls([
+                call(["initialise-"], ["import-nap_peilmerken_Grondslag"]),
                 call(["import-nap_peilmerken_Grondslag"],
                      ["relate-nap_peilmerken_relation_attribute_1", "relate-nap_peilmerken_relation_attribute_2"]),
+                call(["prepare-nap"], ["initialise-"])
             ])

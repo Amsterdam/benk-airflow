@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 from airflow import DAG
-from airflow.models.baseoperator import chain, cross_downstream
+from airflow.models.baseoperator import cross_downstream
 
 from benk.common import BaseOperaterArgs
 from benk.definitions import DEFINITIONS
@@ -34,7 +34,7 @@ for definition in DEFINITIONS:
             ]
 
         # Start with initialising / migrating before imports
-        chain(*initialise.get_leaf_nodes(), flatten_list([i.get_start_nodes() for i in imports]))
+        cross_downstream(initialise.get_leaf_nodes(), flatten_list([i.get_start_nodes() for i in imports]))
 
         # Link imports to relates
         cross_downstream(
@@ -45,4 +45,4 @@ for definition in DEFINITIONS:
             prepare = Prepare(definition.catalog)
 
             # Add Prepare
-            chain(prepare.get_leaf_nodes(), *initialise.get_start_nodes())
+            cross_downstream(prepare.get_leaf_nodes(), initialise.get_start_nodes())
