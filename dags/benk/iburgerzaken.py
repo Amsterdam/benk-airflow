@@ -1,17 +1,9 @@
 from datetime import datetime
 
-from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-from kubernetes.client import V1EnvVar
+from airflow.decorators import dag, task
 
 from benk.common import NAMESPACE, TEAM_NAME
-from benk.image import Image
 
-
-image = Image(
-    name="{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken_test_image') }}",
-    tag="{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}"
-)
 
 operator_default_args = {
     "labels": {"team_name": TEAM_NAME},
@@ -23,44 +15,76 @@ operator_default_args = {
     "do_xcom_push": False,
 }
 
-BaseOperaterArgs = {
-    "owner": "basis en kernregistraties",
-    "depends_on_past": False,
-    "email": ["ois.gob@amsterdam.nl"],
-    "email_on_failure": False,
-    "email_on_retry": False,
-    "retries": 0,
-    # "retry_delay": timedelta(seconds=30),
+
+CONFIG_IBZ = {
+    "host": "{{ var.value.get('db-iburgerzaken-server') }}",
+    "port": 22,
+    "user": "{{ var.value.get('sftp-iburgerzaken-uid') }}",
+    "pw": "{{ var.value.get('sftp-iburgerzaken-uid-pwd') }}"
+}
+CONFIG_GOB = {
+    "host": "{{ var.value.get('db-iburgerzaken-server') }}",
+    "port": 22,
+    "user": "{{ var.value.get('objectstore-gob-tenantid') }}:{{ var.value.get('objectstore-gob-user') }}",
+    "pw": "{{ var.value.get('objectstore-gob-password') }}"
 }
 
-with DAG(
-        dag_id="iburgerzaken",
-        tags=["pink", "brp"],
-        default_args=BaseOperaterArgs,
-        template_searchpath=["/"],
-        schedule_interval=None,
-        catchup=False,
-        start_date=datetime.utcnow(),
-):
-    task1 = KubernetesPodOperator(
+
+@dag(
+    schedule_interval=None,
+    catchup=False,
+    start_date=datetime.utcnow(),
+    tags=["pink", "brp", "iburgerzaken"],
+)
+def transfer_ibz_to_gob():
+    """Main DAG."""
+
+    @task.kubernetes(
         name="list_contents",
-        task_id="list_contents",
         namespace=NAMESPACE,
-        image=image.url,
-        image_pull_policy=image.pull_policy,
-
-        cmds=["python3"],
-        arguments=["main.py"],
-
-        env_vars=[
-            V1EnvVar("DB_IBURGERZAKEN_SERVER", "{{ var.value.get('db-iburgerzaken-server') }}"),
-            V1EnvVar("SFTP_IBURGERZAKEN_UID", "{{ var.value.get('sftp-iburgerzaken-uid') }}"),
-            V1EnvVar("SFTP_IBURGERZAKEN_UID_PWD", "{{ var.value.get('sftp-iburgerzaken-uid-pwd') }}"),
-            V1EnvVar("GOB_OBJECTSTORE_TENANTID", "{{ var.value.get('objectstore-gob-tenantid') }}"),
-            V1EnvVar("GOB_OBJECTSTORE_USER", "{{ var.value.get('objectstore-gob-user') }}"),
-            V1EnvVar("GOB_OBJECTSTORE_PWD", "{{ var.value.get('objectstore-gob-password') }}"),
-        ],
+        image="python:3.10-slim-bullseye",
         **operator_default_args,
     )
+    def transfer_files():
+        import subprocess
+        import sys
+        import datetime as dt
+        import os
+        from tempfile import TemporaryDirectory
 
-    task1
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "paramiko"])
+
+        import paramiko
+        from paramiko.sftp_client import SFTPClient
+
+        def get_connection(user, pw, host, port) -> SFTPClient:
+            transport = paramiko.Transport((host, int(port)))
+            transport.connect(username=user, password=pw)
+            print(f"Connected to {user}@{host}")
+            return paramiko.SFTPClient.from_transport(transport)
+
+        with (
+            get_connection(**CONFIG_IBZ) as ibz_client,
+            get_connection(**CONFIG_GOB) as gob_client,
+            TemporaryDirectory() as tempdir
+        ):
+            for item in ibz_client.listdir():
+                stat = ibz_client.stat(item)
+
+                print(
+                    item,
+                    f"{stat.st_size / 1024 / 1024:,.1f} mb",
+                    dt.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
+                )
+                tmp_file = os.path.join(tempdir, item)
+
+                ibz_client.get(item, tmp_file)
+                print("Downloaded:", item)
+
+                gob_client.put(tmp_file, f"development/iburgerzaken/{item}")
+                print("Uploaded:", item)
+
+    transfer_files()
+
+
+transfer_ibz_to_gob()
