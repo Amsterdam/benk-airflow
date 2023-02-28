@@ -118,3 +118,11 @@ class PrepareServiceEnvironment(NeuronDatabaseEnvironment, GOBPrepareDatabaseEnv
     """All settings needed for the Prepare service to run."""
 
     pass
+
+
+class IburgerZakenEnvironment(ObjectStoreGOBEnvironment):
+    """Secrets used to connect to IBurgerZaken SFTP."""
+
+    DB_IBURGERZAKEN_SERVER = "{{ var.value.get('db-iburgerzaken-server') }}"
+    SFTP_IBURGERZAKEN_UID = "{{ var.value.get('sftp-iburgerzaken-uid') }}"
+    SFTP_IBURGERZAKEN_UID_PWD = "{{ var.value.get('sftp-iburgerzaken-uid-pwd') }}"
