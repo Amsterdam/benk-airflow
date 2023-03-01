@@ -29,7 +29,7 @@ class TestIburgerZaken:
                 name="list_contents",
                 task_id="list_contents",
                 namespace="test_airflow",
-                image="test_registry/{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken_sync_image') }}:{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}",
+                image="test_registry/{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken-sftp-sync') }}:{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}",
                 image_pull_policy="Always",
                 cmds=["python3"],
                 arguments=["main.py"],

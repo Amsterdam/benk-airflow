@@ -9,7 +9,7 @@ from benk.environment import IburgerZakenEnvironment
 from benk.image import Image
 
 image = Image(
-    name="{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken_sync_image') }}",
+    name="{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken-sftp-sync') }}",
     tag="{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}",
 )
 
