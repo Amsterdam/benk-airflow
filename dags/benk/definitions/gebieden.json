@@ -40,7 +40,7 @@
       },
       "relations": [
         "ligt_in_gebieden_stadsdeel",
-        "ligt_in_gebieden_ggwgebied",
+        "bestaat_uit_gebieden_buurten",
         "ligt_in_brk_gemeente"
       ]
     },
