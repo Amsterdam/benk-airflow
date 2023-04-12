@@ -1,4 +1,5 @@
 from airflow.models.baseoperator import BaseOperator, chain
+from airflow.utils.trigger_rule import TriggerRule
 
 from benk.workflow.workflow import BaseDAG, UploadArgs, XCom
 
@@ -38,6 +39,7 @@ class Relate(BaseDAG):
                 f"--collection={self.collection}",
                 f"--attribute={self.attribute}",
             ],
+            trigger_rule=TriggerRule.ALL_DONE,  # trigger task when dependency is done, fail or success
             **UploadArgs,
         )
 
