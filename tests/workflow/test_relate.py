@@ -1,5 +1,6 @@
 from unittest import mock, TestCase
 
+from airflow.utils.trigger_rule import TriggerRule
 from tests.mocks import mock_get_variable
 
 
@@ -23,3 +24,6 @@ class TestWorkflow(TestCase):
             assert [n.name for n in relate.get_start_nodes()] == starts
 
             mock_chain.assert_called_with(*relate._tasks)
+
+            assert relate.get_start_nodes()[0].trigger_rule == TriggerRule.ALL_DONE
+
