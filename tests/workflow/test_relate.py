@@ -14,7 +14,7 @@ class TestWorkflow(TestCase):
             assert len(relate._tasks) == 6
 
             # Notice: dash instead of underscore for update_view
-            names = ["prepare", "process", "update", "apply", "update-view", "check"]
+            names = ["prepare", "process", "upload", "apply", "update-view", "check"]
             assert all(task.name == name for task, name in zip(relate._tasks, names))
 
             leafs = ["check"]
@@ -26,4 +26,3 @@ class TestWorkflow(TestCase):
             mock_chain.assert_called_with(*relate._tasks)
 
             assert relate.get_start_nodes()[0].trigger_rule == TriggerRule.ALL_DONE
-
