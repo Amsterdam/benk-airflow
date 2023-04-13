@@ -9,8 +9,8 @@ class Relate(BaseDAG):
 
     XCOM_MAPPER = {
         "process": "prepare",
-        "update": "process",
-        "apply": "update",
+        "upload": "process",
+        "apply": "upload",
         "update_view": "apply",
         "check": "update_view",
     }
@@ -53,8 +53,8 @@ class Relate(BaseDAG):
             **UploadArgs,
         )
 
-    def _update(self):
-        name = "update"
+    def _upload(self):
+        name = "upload"
         return self.Operator(
             name=name,
             task_id=self.get_taskid(name),
@@ -97,7 +97,7 @@ class Relate(BaseDAG):
         self._tasks = [
             self._prepare(),
             self._process(),
-            self._update(),
+            self._upload(),
             self._apply(),
             self._update_view(),
             self._check(),
