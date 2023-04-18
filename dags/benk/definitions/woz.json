@@ -1,0 +1,27 @@
+{
+  "catalog": "woz",
+  "prepare": true,
+  "collections": [
+    {
+      "collection": "wozobjecten",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": [
+        "bestaat_uit_wozdeelobjecten"
+      ]
+    },
+    {
+      "collection": "wozdeelobjecten",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": [
+        "is_verbonden_met_verblijfsobject",
+        "is_verbonden_met_ligplaats",
+        "is_verbonden_met_standplaats",
+        "heeft_pand"
+      ]
+    }
+  ]
+}
