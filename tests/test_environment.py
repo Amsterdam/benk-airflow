@@ -13,3 +13,10 @@ class TestEnvironment:
         assert "env_vars" not in keys
         assert "GRONDSLAG_DATABASE_PASSWORD" in keys
         assert "GRONDSLAG_DATABASE_PORT" in keys
+
+    def test_prepare_env(self):
+        from benk.environment import PrepareServiceEnvironment
+
+        assert hasattr(PrepareServiceEnvironment, "GOB_PREPARE_DATABASE_HOST")
+        assert hasattr(PrepareServiceEnvironment, "NRBIN_DATABASE_HOST")
+        assert hasattr(PrepareServiceEnvironment, "BASISINFORMATIE_OBJECTSTORE_TENANT_ID")
