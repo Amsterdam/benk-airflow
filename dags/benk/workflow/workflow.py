@@ -13,6 +13,7 @@ from benk.environment import (
     GrondslagEnvironment,
     NeuronDatabaseEnvironment,
     ObjectStoreBasisInformatieEnvironment,
+    PrepareServiceEnvironment,
 )
 from benk.image import Image
 from benk.volume import Volume
@@ -53,7 +54,7 @@ PrepareArgs = dict(
     image=PrepareImage.url,
     image_pull_policy=PrepareImage.pull_policy,
     cmds=["python", "-m", "gobprepare"],
-    env_vars=NeuronDatabaseEnvironment().env_vars() + GOBPrepareDatabaseEnvironment().env_vars(),
+    env_vars=PrepareServiceEnvironment().env_vars(),
     **operator_default_args,
 )
 
