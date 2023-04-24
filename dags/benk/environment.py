@@ -113,7 +113,9 @@ class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
     GOB_PREPARE_DATABASE_USER = Variable.get("gob-prepare-database-user")
 
 
-class PrepareServiceEnvironment(NeuronDatabaseEnvironment, GOBPrepareDatabaseEnvironment):
+class PrepareServiceEnvironment(
+    NeuronDatabaseEnvironment, GOBPrepareDatabaseEnvironment, ObjectStoreBasisInformatieEnvironment
+):
     """All settings needed for the Prepare service to run."""
 
     pass
