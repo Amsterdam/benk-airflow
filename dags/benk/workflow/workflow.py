@@ -86,6 +86,7 @@ ImportArgs = dict(
         + ObjectStoreBasisInformatieEnvironment().env_vars()
         + NeuronDatabaseEnvironment().env_vars()
         + DecosDatabaseEnvironment().env_vars()
+        + GOBPrepareDatabaseEnvironment().env_vars()
     ),
     **operator_default_args,
 )
