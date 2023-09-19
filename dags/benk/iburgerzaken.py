@@ -31,8 +31,8 @@ with DAG(
     start_date=datetime.utcnow(),
 ):
     task1 = KubernetesPodOperator(
-        name="list_contents",
-        task_id="list_contents",
+        name="sync_contents",
+        task_id="sync_contents",
         namespace=NAMESPACE,
         image=image.url,
         image_pull_policy=image.pull_policy,

@@ -127,3 +127,4 @@ class IburgerZakenEnvironment(ObjectStoreGOBEnvironment):
     DB_IBURGERZAKEN_SERVER = "{{ var.value.get('db-iburgerzaken-server') }}"
     SFTP_IBURGERZAKEN_UID = "{{ var.value.get('sftp-iburgerzaken-uid') }}"
     SFTP_IBURGERZAKEN_UID_PWD = "{{ var.value.get('sftp-iburgerzaken-uid-pwd') }}"
+    SFTP_IBURGERZAKEN_PATH = "{{ var.value.get('sftp-iburgerzaken-path') }}"
