@@ -3,24 +3,25 @@
   "prepare": true,
   "collections": [
     {
-      "collection": "wozobjecten",
+      "collection": "objecten",
       "import": {
         "application": "GOBPrepare"
       },
       "relations": [
-        "bestaat_uit_wozdeelobjecten"
+        "bestaat_uit_woz_deelobjecten",
+        "bevat_brk_kadastraalobject"
       ]
     },
     {
-      "collection": "wozdeelobjecten",
+      "collection": "deelobjecten",
       "import": {
         "application": "GOBPrepare"
       },
       "relations": [
-        "is_verbonden_met_verblijfsobject",
-        "is_verbonden_met_ligplaats",
-        "is_verbonden_met_standplaats",
-        "heeft_pand"
+        "is_verbonden_met_bag_verblijfsobject",
+        "is_verbonden_met_bag_ligplaats",
+        "is_verbonden_met_bag_standplaats",
+        "heeft_bag_pand"
       ]
     }
   ]
