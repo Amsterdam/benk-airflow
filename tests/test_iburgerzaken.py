@@ -26,8 +26,8 @@ class TestIburgerZaken:
                 start_date=datetime.utcnow(),
             )
             mock_operator.assert_called_with(
-                name="list_contents",
-                task_id="list_contents",
+                name="sync_contents",
+                task_id="sync_contents",
                 namespace="test_airflow",
                 image="test_registry/{{ var.value.get('pod-iburgerzaken-image-name', 'iburgerzaken-sftp-sync') }}:{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}",
                 image_pull_policy="Always",
