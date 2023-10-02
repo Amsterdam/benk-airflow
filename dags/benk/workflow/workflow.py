@@ -26,6 +26,7 @@ operator_default_args = {
     "log_events_on_failure": True,
     "reattach_on_restart": False,
     "do_xcom_push": True,
+    "startup_timeout_seconds": 180,  # increased from default 120 seconds
 }
 
 GobVolume = Volume(
