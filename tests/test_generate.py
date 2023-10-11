@@ -5,7 +5,6 @@ from unittest.mock import patch, call
 from freezegun import freeze_time
 
 from benk.common import BaseOperaterArgs
-from tests.mocks import mock_get_variable
 
 
 class MockDag:
@@ -37,7 +36,6 @@ class MockInitialiseDag(MockDag):
     type = "initialise"
 
 
-@patch("airflow.models.Variable", mock_get_variable)
 class TestGenerate:
 
     @freeze_time("2022-12-05")

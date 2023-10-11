@@ -1,15 +1,22 @@
-from unittest import mock
+import unittest
+from unittest.mock import patch, call
 
-from tests.mocks import mock_get_variable
 
+class TestEnvironment(unittest.TestCase):
 
-@mock.patch("airflow.models.Variable", mock_get_variable)
-class TestEnvironment:
-
-    def test_env_vars(self):
+    @patch("benk.environment.mask_secret")
+    def test_env_vars(self, mock_mask):
         from benk.environment import GrondslagEnvironment
         settings = GrondslagEnvironment()
         keys = [val.name for val in settings.env_vars()]
+
+        mock_mask.assert_has_calls([
+            call("GRONDSLAG_DATABASE"),
+            call("GRONDSLAG_DATABASE_HOST"),
+            call("GRONDSLAG_DATABASE_PASSWORD"),
+            call("GRONDSLAG_DATABASE_PORT"),
+            call("GRONDSLAG_DATABASE_USER"),
+        ])
         assert "env_vars" not in keys
         assert "GRONDSLAG_DATABASE_PASSWORD" in keys
         assert "GRONDSLAG_DATABASE_PORT" in keys

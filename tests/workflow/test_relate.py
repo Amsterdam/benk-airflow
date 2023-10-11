@@ -1,10 +1,8 @@
 from unittest import mock, TestCase
 
 from airflow.utils.trigger_rule import TriggerRule
-from tests.mocks import mock_get_variable
 
 
-@mock.patch("airflow.models.Variable", mock_get_variable)
 class TestWorkflow(TestCase):
 
     def test_relate(self):

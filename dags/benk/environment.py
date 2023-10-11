@@ -1,6 +1,6 @@
 from typing import List
 
-from airflow.models import Variable
+from airflow.utils.log.secrets_masker import mask_secret
 from kubernetes.client import V1EnvVar
 
 
@@ -12,21 +12,24 @@ class OperatorEnvironment:
 
     def env_vars(self) -> List[V1EnvVar]:
         """Return all env vars in this object."""
+        secrets = []
 
-        def _is_env_var(k) -> bool:
-            if str(k).startswith("__"):
-                return False
-            if callable(getattr(self, k)):
-                return False
-            return True
+        for key in dir(self):
+            if key[:2] == "__" or callable(getattr(self, key)):
+                continue
 
-        return [V1EnvVar(name=k, value=getattr(self, k)) for k in dir(self) if _is_env_var(k)]
+            # https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/mask-sensitive-values.html
+            mask_secret(key)
+
+            secrets.append(V1EnvVar(key, getattr(self, key)))
+
+        return secrets
 
 
 class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers."""
 
-    GOB_SHARED_DIR = Variable.get("GOB-SHARED-DIR", "/app/shared")
+    GOB_SHARED_DIR = "{{ var.value.get('gob-shared-dir', '/app/shared') }}"
 
 
 class GOBEnvironment(OperatorEnvironment):
@@ -38,79 +41,79 @@ class GOBEnvironment(OperatorEnvironment):
     names, instead of DATABASE_*.
     """
 
-    DATABASE_USER = Variable.get("gob-database-user", "gob")
-    DATABASE_NAME = Variable.get("gob-database-name", "gob")
-    DATABASE_PASSWORD = Variable.get("gob-database-password")
-    DATABASE_HOST_OVERRIDE = Variable.get("gob-database-host-override", "host.docker.internal")
-    DATABASE_PORT_OVERRIDE = Variable.get("gob-database-port-override", "5406")
+    DATABASE_HOST_OVERRIDE = "{{ var.value.get('gob-database-host-override') }}"
+    DATABASE_PASSWORD = "{{ var.value.get('gob-database-password') }}"
+    DATABASE_NAME = "{{ var.value.get('gob-database-name') }}"
+    DATABASE_PORT_OVERRIDE = "{{ var.value.get('gob-database-port-override') }}"
+    DATABASE_USER = "{{ var.value.get('gob-database-user') }}"
 
 
 class GrondslagEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    GRONDSLAG_DATABASE_HOST = Variable.get("grondslag-host")
-    GRONDSLAG_DATABASE_PASSWORD = Variable.get("grondslag-password")
-    GRONDSLAG_DATABASE = Variable.get("grondslag-db")
-    GRONDSLAG_DATABASE_PORT = Variable.get("grondslag-port", "1521")
-    GRONDSLAG_DATABASE_USER = Variable.get("grondslag-user")
+    GRONDSLAG_DATABASE_HOST = "{{ var.value.get('grondslag-host') }}"
+    GRONDSLAG_DATABASE_PASSWORD = "{{ var.value.get('grondslag-password') }}"
+    GRONDSLAG_DATABASE = "{{ var.value.get('grondslag-db') }}"
+    GRONDSLAG_DATABASE_PORT = "{{ var.value.get('grondslag-port') }}"
+    GRONDSLAG_DATABASE_USER = "{{ var.value.get('grondslag-user') }}"
 
 
 class DGDialogEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    BINBG_DATABASE_HOST = Variable.get("dgdialog-host")
-    BINBG_DATABASE_PASSWORD = Variable.get("dgdialog-password")
-    BINBG_DATABASE = Variable.get("dgdialog-db")
-    BINBG_DATABASE_PORT = Variable.get("dgdialog-port", "1521")
-    BINBG_DATABASE_USER = Variable.get("dgdialog-user")
+    BINBG_DATABASE_HOST = "{{ var.value.get('dgdialog-host') }}"
+    BINBG_DATABASE_PASSWORD = "{{ var.value.get('dgdialog-password') }}"
+    BINBG_DATABASE = "{{ var.value.get('dgdialog-db') }}"
+    BINBG_DATABASE_PORT = "{{ var.value.get('dgdialog-port') }}"
+    BINBG_DATABASE_USER = "{{ var.value.get('dgdialog-user') }}"
 
 
 class ObjectStoreGOBEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    GOB_OBJECTSTORE_TENANT_ID = Variable.get("objectstore-gob-tenantid")
-    GOB_OBJECTSTORE_PASSWORD = Variable.get("objectstore-gob-password")
-    GOB_OBJECTSTORE_TENANT_NAME = Variable.get("objectstore-gob-tenantname")
-    GOB_OBJECTSTORE_USER = Variable.get("objectstore-gob-user")
+    GOB_OBJECTSTORE_TENANT_ID = "{{ var.value.get('objectstore-gob-tenantid') }}"
+    GOB_OBJECTSTORE_PASSWORD = "{{ var.value.get('objectstore-gob-password') }}"
+    GOB_OBJECTSTORE_TENANT_NAME = "{{ var.value.get('objectstore-gob-tenantname') }}"
+    GOB_OBJECTSTORE_USER = "{{ var.value.get('objectstore-gob-user') }}"
 
 
 class ObjectStoreBasisInformatieEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the grondslag database."""
 
-    BASISINFORMATIE_OBJECTSTORE_TENANT_ID = Variable.get("objectstore-bi-tenantid")
-    BASISINFORMATIE_OBJECTSTORE_PASSWORD = Variable.get("objectstore-bi-password")
-    BASISINFORMATIE_OBJECTSTORE_TENANT_NAME = Variable.get("objectstore-bi-tenantname")
-    BASISINFORMATIE_OBJECTSTORE_USER = Variable.get("objectstore-bi-user")
+    BASISINFORMATIE_OBJECTSTORE_TENANT_ID = "{{ var.value.get('objectstore-bi-tenantid') }}"
+    BASISINFORMATIE_OBJECTSTORE_PASSWORD = "{{ var.value.get('objectstore-bi-password') }}"
+    BASISINFORMATIE_OBJECTSTORE_TENANT_NAME = "{{ var.value.get('objectstore-bi-tenantname') }}"
+    BASISINFORMATIE_OBJECTSTORE_USER = "{{ var.value.get('objectstore-bi-user') }}"
 
 
 class NeuronDatabaseEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the Neuron database."""
 
-    NRBIN_DATABASE = Variable.get("neuron-database")
-    NRBIN_DATABASE_HOST = Variable.get("neuron-host")
-    NRBIN_DATABASE_PASSWORD = Variable.get("neuron-password")
-    NRBIN_DATABASE_PORT = Variable.get("neuron-port")
-    NRBIN_DATABASE_USER = Variable.get("neuron-user")
+    NRBIN_DATABASE = "{{ var.value.get('neuron-database') }}"
+    NRBIN_DATABASE_HOST = "{{ var.value.get('neuron-host') }}"
+    NRBIN_DATABASE_PASSWORD = "{{ var.value.get('neuron-password') }}"
+    NRBIN_DATABASE_PORT = "{{ var.value.get('neuron-port') }}"
+    NRBIN_DATABASE_USER = "{{ var.value.get('neuron-user') }}"
 
 
 class DecosDatabaseEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the Neuron database."""
 
-    BINF_DATABASE = Variable.get("decos-database")
-    BINF_DATABASE_HOST = Variable.get("decos-host")
-    BINF_DATABASE_PASSWORD = Variable.get("decos-password")
-    BINF_DATABASE_PORT = Variable.get("decos-port")
-    BINF_DATABASE_USER = Variable.get("decos-user")
+    BINF_DATABASE = "{{ var.value.get('decos-database') }}"
+    BINF_DATABASE_HOST = "{{ var.value.get('decos-host') }}"
+    BINF_DATABASE_PASSWORD = "{{ var.value.get('decos-password') }}"
+    BINF_DATABASE_PORT = "{{ var.value.get('decos-port') }}"
+    BINF_DATABASE_USER = "{{ var.value.get('decos-user') }}"
 
 
 class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the GOB Prepare database."""
 
-    GOB_PREPARE_DATABASE = Variable.get("gob-prepare-database")
-    GOB_PREPARE_DATABASE_HOST = Variable.get("gob-prepare-database-host")
-    GOB_PREPARE_DATABASE_PASSWORD = Variable.get("gob-prepare-database-password")
-    GOB_PREPARE_DATABASE_PORT = Variable.get("gob-prepare-database-port")
-    GOB_PREPARE_DATABASE_USER = Variable.get("gob-prepare-database-user")
+    GOB_PREPARE_DATABASE = "{{ var.value.get('gob-prepare-database') }}"
+    GOB_PREPARE_DATABASE_HOST = "{{ var.value.get('gob-prepare-host') }}"
+    GOB_PREPARE_DATABASE_PASSWORD = "{{ var.value.get('gob-prepare-password') }}"
+    GOB_PREPARE_DATABASE_PORT = "{{ var.value.get('gob-prepare-port') }}"
+    GOB_PREPARE_DATABASE_USER = "{{ var.value.get('gob-prepare-user') }}"
 
 
 class PrepareServiceEnvironment(
