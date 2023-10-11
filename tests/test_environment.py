@@ -11,11 +11,11 @@ class TestEnvironment(unittest.TestCase):
         keys = [val.name for val in settings.env_vars()]
 
         mock_mask.assert_has_calls([
-            call("GRONDSLAG_DATABASE"),
-            call("GRONDSLAG_DATABASE_HOST"),
-            call("GRONDSLAG_DATABASE_PASSWORD"),
-            call("GRONDSLAG_DATABASE_PORT"),
-            call("GRONDSLAG_DATABASE_USER"),
+            call({'GRONDSLAG_DATABASE': "{{ var.value.get('grondslag-db') }}"}),
+            call({'GRONDSLAG_DATABASE_HOST': "{{ var.value.get('grondslag-host') }}"}),
+            call({'GRONDSLAG_DATABASE_PASSWORD': "{{ var.value.get('grondslag-password') }}"}),
+            call({'GRONDSLAG_DATABASE_PORT': "{{ var.value.get('grondslag-port') }}"}),
+            call({'GRONDSLAG_DATABASE_USER': "{{ var.value.get('grondslag-user') }}"})
         ])
         assert "env_vars" not in keys
         assert "GRONDSLAG_DATABASE_PASSWORD" in keys

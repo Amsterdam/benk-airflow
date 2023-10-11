@@ -18,10 +18,12 @@ class OperatorEnvironment:
             if key[:2] == "__" or callable(getattr(self, key)):
                 continue
 
-            # https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/mask-sensitive-values.html
-            mask_secret(key)
+            secret = {key: getattr(self, key)}
 
-            secrets.append(V1EnvVar(key, getattr(self, key)))
+            # https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/mask-sensitive-values.html
+            mask_secret(secret)
+
+            secrets.append(V1EnvVar(key, secret[key]))
 
         return secrets
 
