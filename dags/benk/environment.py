@@ -110,10 +110,10 @@ class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
     """Settings and secrets to connect to the GOB Prepare database."""
 
     GOB_PREPARE_DATABASE = "{{ var.value.get('gob-prepare-database') }}"
-    GOB_PREPARE_DATABASE_HOST = "{{ var.value.get('gob-prepare-host') }}"
-    GOB_PREPARE_DATABASE_PASSWORD = "{{ var.value.get('gob-prepare-password') }}"
-    GOB_PREPARE_DATABASE_PORT = "{{ var.value.get('gob-prepare-port') }}"
-    GOB_PREPARE_DATABASE_USER = "{{ var.value.get('gob-prepare-user') }}"
+    GOB_PREPARE_DATABASE_HOST = "{{ var.value.get('gob-prepare-database-host') }}"
+    GOB_PREPARE_DATABASE_PASSWORD = "{{ var.value.get('gob-prepare-database-password') }}"
+    GOB_PREPARE_DATABASE_PORT = "{{ var.value.get('gob-prepare-database-port') }}"
+    GOB_PREPARE_DATABASE_USER = "{{ var.value.get('gob-prepare-database-user') }}"
 
 
 class PrepareServiceEnvironment(
