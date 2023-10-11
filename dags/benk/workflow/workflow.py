@@ -30,10 +30,11 @@ operator_default_args = {
     "startup_timeout_seconds": 180,  # increased from default 120 seconds
 }
 
+# Volumes are NOT templated, hardcode the values
 GobVolume = Volume(
     name="gob-volume",
     mount_path="/app/shared",
-    claim="{{ var.value.get('pod-gob-shared-storage-claim', 'shared-storage-claim') }}",
+    claim="benk-benkbbn1-sa-pvc",
 )
 
 UploadImage = Image(
