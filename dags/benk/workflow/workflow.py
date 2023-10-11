@@ -1,6 +1,7 @@
 from abc import abstractmethod
+from typing import Any, Mapping
 
-from airflow.models import BaseOperator, Variable
+from airflow.models import BaseOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
 from benk.common import NAMESPACE, TEAM_NAME
@@ -32,25 +33,26 @@ operator_default_args = {
 GobVolume = Volume(
     name="gob-volume",
     mount_path="/app/shared",
-    claim=Variable.get("pod-gob-shared-storage-claim", "shared-storage-claim"),
+    claim="{{ var.value.get('pod-gob-shared-storage-claim', 'shared-storage-claim') }}",
 )
 
 UploadImage = Image(
-    name=Variable.get("pod-gob-upload-image-name", default_var="gob_upload"),
-    tag=Variable.get("pod-gob-upload-image-tag", default_var="latest"),
+    name="{{ var.value.get('pod-gob-upload-image-name', 'gob_upload') }}",
+    tag="{{ var.value.get('pod-gob-upload-image-tag', 'latest') }}",
 )
 
 ImportImage = Image(
-    name=Variable.get("pod-gob-import-image-name", default_var="gob_import"),
-    tag=Variable.get("pod-gob-import-image-tag", default_var="latest"),
+    name="{{ var.value.get('pod-gob-import-image-name', 'gob_import') }}",
+    tag="{{ var.value.get('pod-gob-import-image-tag', 'latest') }}",
 )
 
 PrepareImage = Image(
-    name=Variable.get("pod-gob-prepare-image-name", default_var="gob_prepare"),
-    tag=Variable.get("pod-gob-prepare-image-tag", default_var="latest"),
+    name="{{ var.value.get('pod-gob-prepare-image-name', 'gob_prepare') }}",
+    tag="{{ var.value.get('pod-gob-prepare-image-tag', 'latest') }}",
 )
 
-PrepareArgs = dict(
+# TODO: use some kind of model/pydantic
+PrepareArgs: Mapping[str, Any] = dict(
     namespace=NAMESPACE,
     image=PrepareImage.url,
     image_pull_policy=PrepareImage.pull_policy,
@@ -59,7 +61,7 @@ PrepareArgs = dict(
     **operator_default_args,
 )
 
-UploadArgs = dict(
+UploadArgs: Mapping[str, Any] = dict(
     namespace=NAMESPACE,
     image=UploadImage.url,
     image_pull_policy=UploadImage.pull_policy,
@@ -70,11 +72,7 @@ UploadArgs = dict(
     **operator_default_args,
 )
 
-# TODO: filter env vars per import
-# TODO: store as secret?
-# TODO: Use templates!
-# https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#airflow-variables
-ImportArgs = dict(
+ImportArgs: Mapping[str, Any] = dict(
     namespace=NAMESPACE,
     image=ImportImage.url,
     image_pull_policy=ImportImage.pull_policy,

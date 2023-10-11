@@ -1,7 +1,5 @@
 from datetime import timedelta
 
-from airflow.models import Variable
-
 BaseOperaterArgs = {
     "owner": "basis en kernregistraties",
     "depends_on_past": False,
@@ -13,5 +11,5 @@ BaseOperaterArgs = {
 }
 
 TEAM_NAME = "BenK"
-NAMESPACE = Variable.get("pod-namespace", default_var="airflow")
-REGISTRY_URL = Variable.get("pod-container-registry-url", default_var=None)
+NAMESPACE = "{{ var.value.get('pod-namespace', 'airflow') }}"
+REGISTRY_URL = "{{ var.value.get('pod-container-registry-url') }}"

@@ -1,9 +1,6 @@
 from unittest import mock, TestCase
 
-from tests.mocks import mock_get_variable
 
-
-@mock.patch("airflow.models.Variable", mock_get_variable)
 class TestWorkflow(TestCase):
 
     @mock.patch("benk.workflow.import_.chain")

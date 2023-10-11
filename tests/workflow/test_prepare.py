@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from tests.mocks import mock_get_variable, mock_prepare_configs_dir
+from tests.mocks import mock_prepare_configs_dir
 
 
 class MockOperator:
@@ -13,7 +13,6 @@ class MockOperator:
         self.depends_on = [o.task_id for o in other]
 
 
-@patch("airflow.models.Variable", mock_get_variable)
 class TestPrepare(TestCase):
 
     def test_prepare(self):
