@@ -29,17 +29,18 @@ with DAG(
     default_args=BaseOperaterArgs,
     catchup=False,
     start_date=datetime.utcnow(),
+    params={"operation": "sync", "destination": "development/iburgerzaken"},
 ):
-    task1 = KubernetesPodOperator(
-        name="sync_contents",
-        task_id="sync_contents",
+    execute_task = KubernetesPodOperator(
+        name="execute",
+        task_id="execute",
         namespace=NAMESPACE,
         image=image.url,
         image_pull_policy=image.pull_policy,
         cmds=["python3"],
-        arguments=["main.py"],
+        arguments=["main.py", "{{ params.operation }}", "{{ params.destination }}"],
         env_vars=IburgerZakenEnvironment().env_vars(),
         **operator_default_args,
     )
 
-    task1
+    execute_task

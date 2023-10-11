@@ -14,7 +14,7 @@ class TestIburgerZaken(unittest.TestCase):
         with (
             patch("airflow.DAG") as mock_dag,
             patch("airflow.providers.cncf.kubernetes.operators.kubernetes_pod.KubernetesPodOperator") as mock_operator,
-            patch("benk.environment.IburgerZakenEnvironment") as mock_ibz_env
+            patch("benk.environment.IburgerZakenEnvironment") as mock_ibz_env,
         ):
             import benk.iburgerzaken
             from benk.iburgerzaken import operator_default_args
@@ -25,10 +25,14 @@ class TestIburgerZaken(unittest.TestCase):
                 default_args=BaseOperaterArgs,
                 catchup=False,
                 start_date=datetime.utcnow(),
+                params={
+                    "operation": "sync",
+                    "destination": "development/iburgerzaken"
+                }
             )
             mock_operator.assert_called_with(
-                name="sync_contents",
-                task_id="sync_contents",
+                name="execute",
+                task_id="execute",
                 namespace="{{ var.value.get('pod-namespace', 'airflow') }}",
                 image="{{ var.value.get('pod-container-registry-url') }}"
                       "/"
@@ -37,7 +41,7 @@ class TestIburgerZaken(unittest.TestCase):
                       "{{ var.value.get('pod-iburgerzaken-image-tag', 'latest') }}",
                 image_pull_policy="Always",
                 cmds=["python3"],
-                arguments=["main.py"],
+                arguments=["main.py", "{{ params.operation }}", "{{ params.destination }}"],
                 env_vars=mock_ibz_env.return_value.env_vars.return_value,
                 **operator_default_args
             )
