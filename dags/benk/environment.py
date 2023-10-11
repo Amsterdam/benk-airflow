@@ -5,10 +5,7 @@ from kubernetes.client import V1EnvVar
 
 
 class OperatorEnvironment:
-    """Base environment class to put environment variables on.
-
-    TODO: Use 'Secret' object for passwords instead.
-    """
+    """Base environment class to put environment variables on."""
 
     def env_vars(self) -> List[V1EnvVar]:
         """Return all env vars in this object."""
@@ -21,6 +18,7 @@ class OperatorEnvironment:
             secret = {key: getattr(self, key)}
 
             # https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/mask-sensitive-values.html
+            # note: PWD is not masked, PASSWORD is
             mask_secret(secret)
 
             secrets.append(V1EnvVar(key, secret[key]))
@@ -131,5 +129,5 @@ class IburgerZakenEnvironment(ObjectStoreGOBEnvironment):
 
     DB_IBURGERZAKEN_SERVER = "{{ var.value.get('db-iburgerzaken-server') }}"
     SFTP_IBURGERZAKEN_UID = "{{ var.value.get('sftp-iburgerzaken-uid') }}"
-    SFTP_IBURGERZAKEN_UID_PWD = "{{ var.value.get('sftp-iburgerzaken-uid-pwd') }}"
+    SFTP_IBURGERZAKEN_UID_PASSWORD = "{{ var.value.get('sftp-iburgerzaken-uid-password') }}"
     SFTP_IBURGERZAKEN_PATH = "{{ var.value.get('sftp-iburgerzaken-path') }}"
