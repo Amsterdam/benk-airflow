@@ -57,7 +57,7 @@ no_implicit_optional = true
 
 # Getting these passing should be easy
 strict_equality = true
-strict_concatenate = true
+extra_checks = true
 
 # Strongly recommend enabling this one as soon as you can
 check_untyped_defs = true
@@ -150,4 +150,12 @@ env = [
     "AIRFLOW_VAR_GOB-PREPARE-DATABASE-PASSWORD=",
     "AIRFLOW_VAR_GOB-PREPARE-DATABASE-PORT=",
     "AIRFLOW_VAR_GOB-PREPARE-DATABASE-USER=",
+    # SFTP IBZ
+    "SFTP_IBURGERZAKEN_UID=ibz_uid",
+    "SFTP_IBURGERZAKEN_UID_PWD=ibz_pw",
+    "DB_IBURGERZAKEN_SERVER=ibz_server",
+    # SFTP GOB
+    "GOB_OBJECTSTORE_TENANTID=gob_tenant",
+    "GOB_OBJECTSTORE_USER=gob_user",
+    "GOB_OBJECTSTORE_PWD=gob_pw"
 ]
