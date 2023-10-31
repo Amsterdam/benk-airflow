@@ -53,6 +53,17 @@
         "ligt_in_gebieden_buurt",
         "ligt_in_brk_gemeente"
       ]
+    },
+    {
+      "collection": "ggpgebieden",
+      "import": {
+        "application": "Basisinformatie"
+      },
+      "relations": [
+        "ligt_in_gebieden_stadsdeel",
+        "bestaat_uit_gebieden_buurten",
+        "ligt_in_brk_gemeente"
+      ]
     }
   ]
 }
