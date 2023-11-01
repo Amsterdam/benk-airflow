@@ -4,7 +4,7 @@ from typing import Any, Mapping
 from airflow.models import BaseOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
-from benk.common import NAMESPACE, TEAM_NAME
+from benk.common import AKS_NODE_POOL, NAMESPACE, TEAM_NAME
 from benk.environment import (
     DecosDatabaseEnvironment,
     DGDialogEnvironment,
@@ -27,7 +27,11 @@ operator_default_args = {
     "log_events_on_failure": True,
     "reattach_on_restart": False,
     "do_xcom_push": True,
-    "startup_timeout_seconds": 180,  # increased from default 120 seconds
+    "startup_timeout_seconds": 600,  # increased from default 120 seconds
+    # Select a specific nodepool to use. Could also be specified by nodeAffinity.
+    # Make sure we are running on workers in our namespace
+    # specifying namespace parameter is not sufficient
+    "node_selector": {"nodetype": AKS_NODE_POOL},
 }
 
 # Volumes are NOT templated, hardcode the values
