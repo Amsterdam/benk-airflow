@@ -5,17 +5,7 @@ from airflow.models import BaseOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
 from benk.common import AKS_NODE_POOL, NAMESPACE, TEAM_NAME
-from benk.environment import (
-    DecosDatabaseEnvironment,
-    DGDialogEnvironment,
-    GenericEnvironment,
-    GOBEnvironment,
-    GOBPrepareDatabaseEnvironment,
-    GrondslagEnvironment,
-    NeuronDatabaseEnvironment,
-    ObjectStoreBasisInformatieEnvironment,
-    PrepareServiceEnvironment,
-)
+from benk.environment import ImportServiceEnvironment, PrepareServiceEnvironment, UploadServiceEnvironment
 from benk.image import Image
 from benk.volume import Volume
 
@@ -73,7 +63,7 @@ UploadArgs: Mapping[str, Any] = dict(
     volumes=[GobVolume.v1volume],
     volume_mounts=[GobVolume.v1mount],
     cmds=["python", "-m", "gobupload"],
-    env_vars=GenericEnvironment().env_vars() + GOBEnvironment().env_vars(),
+    env_vars=UploadServiceEnvironment().env_vars(),
     **operator_default_args,
 )
 
@@ -84,15 +74,7 @@ ImportArgs: Mapping[str, Any] = dict(
     volumes=[GobVolume.v1volume],
     volume_mounts=[GobVolume.v1mount],
     cmds=["python", "-m", "gobimport"],
-    env_vars=(
-        GenericEnvironment().env_vars()
-        + GrondslagEnvironment().env_vars()
-        + DGDialogEnvironment().env_vars()
-        + ObjectStoreBasisInformatieEnvironment().env_vars()
-        + NeuronDatabaseEnvironment().env_vars()
-        + DecosDatabaseEnvironment().env_vars()
-        + GOBPrepareDatabaseEnvironment().env_vars()
-    ),
+    env_vars=ImportServiceEnvironment().env_vars(),
     **operator_default_args,
 )
 
