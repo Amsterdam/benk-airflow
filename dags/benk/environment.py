@@ -30,6 +30,7 @@ class GenericEnvironment(OperatorEnvironment):
     """Miscellaneous settings shared between containers."""
 
     GOB_SHARED_DIR = "{{ var.value.get('gob-shared-dir', '/app/shared') }}"
+    CONTAINER_BASE = "{{ var.value.get('container-base', 'acceptatie') }}"
 
 
 class GOBEnvironment(OperatorEnvironment):
@@ -116,10 +117,30 @@ class GOBPrepareDatabaseEnvironment(OperatorEnvironment):
     GOB_PREPARE_DATABASE_USER = "{{ var.value.get('gob-prepare-database-user') }}"
 
 
+class ImportServiceEnvironment(
+    GenericEnvironment,
+    GrondslagEnvironment,
+    DGDialogEnvironment,
+    ObjectStoreBasisInformatieEnvironment,
+    NeuronDatabaseEnvironment,
+    DecosDatabaseEnvironment,
+    GOBPrepareDatabaseEnvironment,
+):
+    """All settings needed for the Import service to run."""
+
+    pass
+
+
 class PrepareServiceEnvironment(
-    NeuronDatabaseEnvironment, GOBPrepareDatabaseEnvironment, ObjectStoreBasisInformatieEnvironment
+    GenericEnvironment, NeuronDatabaseEnvironment, GOBPrepareDatabaseEnvironment, ObjectStoreBasisInformatieEnvironment
 ):
     """All settings needed for the Prepare service to run."""
+
+    pass
+
+
+class UploadServiceEnvironment(GenericEnvironment, GOBEnvironment):
+    """All settings needed for the Upload service to run."""
 
     pass
 
