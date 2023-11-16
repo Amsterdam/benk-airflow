@@ -61,6 +61,7 @@ class TestGenerate:
                 schedule_interval=None,
                 catchup=False,
                 start_date=datetime.utcnow(),
+                schedule="my schedule"
             )
 
             mock_cross_downstream.assert_has_calls([
