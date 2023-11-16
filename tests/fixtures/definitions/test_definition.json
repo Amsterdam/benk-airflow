@@ -1,6 +1,9 @@
 {
   "catalog": "nap",
   "prepare": true,
+  "dagParameters": {
+    "schedule": "my schedule"
+  },
   "collections": [
     {
       "collection": "peilmerken",

@@ -4,6 +4,12 @@ from typing import Iterator, Optional
 from pydantic import BaseModel, Field
 
 
+class _DagParameters(BaseModel):
+    """Extra parameters passed to the DAG."""
+
+    schedule: Optional[str] = None
+
+
 class _Import(BaseModel):
     application: str
 
@@ -26,6 +32,7 @@ class _Model(BaseModel):
     """Root model definition, should contain 1 catalog and 1 or more collections."""
 
     catalog: str
+    dagParameters: Optional[_DagParameters]
     prepare: Optional[bool] = False
     collections: list[_Collection]
 

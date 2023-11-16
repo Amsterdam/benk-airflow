@@ -11,6 +11,7 @@ from benk.workflow import Import, Initialise, Prepare, Relate
 
 for definition in DEFINITIONS:
     name = definition.catalog
+    kwargs = dict(definition.dagParameters or {})
 
     with DAG(
         dag_id=name,
@@ -21,6 +22,7 @@ for definition in DEFINITIONS:
         schedule_interval=None,
         catchup=False,
         start_date=datetime.utcnow(),
+        **kwargs
     ):
         initialise = Initialise()
 

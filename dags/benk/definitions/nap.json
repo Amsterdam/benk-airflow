@@ -1,5 +1,8 @@
 {
   "catalog": "nap",
+  "dagParameters": {
+    "schedule": "0 0 * * *"
+  },
   "collections": [
     {
       "collection": "peilmerken",

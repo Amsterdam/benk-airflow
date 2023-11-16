@@ -1,5 +1,8 @@
 {
   "catalog": "bag",
+  "dagParameters": {
+      "schedule": "0 1 * * *"
+  },
   "collections": [
     {
       "collection": "brondocumenten",

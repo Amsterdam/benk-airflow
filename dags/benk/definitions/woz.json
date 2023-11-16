@@ -1,5 +1,8 @@
 {
   "catalog": "woz",
+  "dagParameters": {
+    "schedule": "0 0 * * *"
+  },
   "prepare": true,
   "collections": [
     {

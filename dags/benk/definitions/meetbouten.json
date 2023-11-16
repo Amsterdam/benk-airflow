@@ -1,5 +1,8 @@
 {
   "catalog": "meetbouten",
+  "dagParameters": {
+    "schedule": "0 0 * * *"
+  },
   "collections": [
     {
       "collection": "meetbouten",
