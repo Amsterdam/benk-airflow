@@ -13,6 +13,9 @@ class TestDefinitions(TestCase):
         result = \
             {
                 "catalog": "nap",
+                "dagParameters": {
+                    "schedule": "my schedule"
+                },
                 "prepare": True,
                 "collections": [
                     {
