@@ -1,3 +1,4 @@
+import datetime
 from datetime import timedelta
 from typing import Final
 
@@ -15,3 +16,5 @@ TEAM_NAME: Final = "BenK"
 NAMESPACE: Final = "{{ var.value.get('pod-namespace', 'airflow') }}"
 REGISTRY_URL: Final = "{{ var.value.get('pod-container-registry-url') }}"
 AKS_NODE_POOL: Final = "benkbbn1work"
+
+START_DATE = datetime.datetime(2023, 11, 1)

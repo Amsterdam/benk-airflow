@@ -1,10 +1,9 @@
 import json
-from datetime import datetime
 
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
 
-from benk.common import BaseOperaterArgs
+from benk.common import BaseOperaterArgs, START_DATE
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
 from benk.workflow import Import, Initialise, Prepare, Relate
@@ -21,7 +20,7 @@ for definition in DEFINITIONS:
         user_defined_macros={"json": json},
         schedule_interval=None,
         catchup=False,
-        start_date=datetime.utcnow(),
+        start_date=START_DATE,  # fix start date
         **kwargs
     ):
         initialise = Initialise()
