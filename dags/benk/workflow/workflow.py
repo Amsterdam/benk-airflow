@@ -3,6 +3,7 @@ from typing import Any, Mapping
 
 from airflow.models import BaseOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+
 from benk.common import AKS_NODE_POOL, NAMESPACE, TEAM_NAME
 from benk.environment import ImportServiceEnvironment, PrepareServiceEnvironment, UploadServiceEnvironment
 from benk.image import Image

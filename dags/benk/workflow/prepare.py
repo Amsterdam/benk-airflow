@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from airflow.models import BaseOperator
+
 from benk.utils import flatten_list
 from benk.workflow.workflow import BaseDAG, PrepareArgs
 

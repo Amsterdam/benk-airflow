@@ -3,6 +3,7 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
+
 from benk.common import BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
