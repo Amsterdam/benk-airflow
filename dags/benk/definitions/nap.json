@@ -1,4 +1,5 @@
 {
+  "dag_id": "nap",
   "catalog": "nap",
   "dagParameters": {
     "schedule": "0 0 * * *"

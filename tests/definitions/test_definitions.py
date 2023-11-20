@@ -12,6 +12,7 @@ class TestDefinitions(TestCase):
         model_definition = list(mock_definitions)
         result = \
             {
+                "dag_id": "nap",
                 "catalog": "nap",
                 "dagParameters": {
                     "schedule": "my schedule"

@@ -3,14 +3,13 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
-
 from benk.common import BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
 from benk.workflow import Import, Initialise, Prepare, Relate
 
 for definition in DEFINITIONS:
-    name = definition.catalog
+    name = definition.dag_id
     kwargs = dict(definition.dagParameters or {})
 
     with DAG(

@@ -1,4 +1,5 @@
 {
+  "dag_id": "bag",
   "catalog": "bag",
   "dagParameters": {
       "schedule": "0 1 * * *"
