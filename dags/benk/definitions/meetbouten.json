@@ -1,4 +1,5 @@
 {
+  "dag_id": "meetbouten",
   "catalog": "meetbouten",
   "dagParameters": {
     "schedule": "0 0 * * *"

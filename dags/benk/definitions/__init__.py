@@ -29,8 +29,9 @@ class _Collection(BaseModel):
 
 
 class _Model(BaseModel):
-    """Root model definition, should contain 1 catalog and 1 or more collections."""
+    """Root model definition, should contain 1 dag_id, 1 catalog and 1 or more collections."""
 
+    dag_id: str
     catalog: str
     dagParameters: Optional[_DagParameters]
     prepare: Optional[bool] = False

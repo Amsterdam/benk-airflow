@@ -1,4 +1,5 @@
 {
+  "dag_id": "gebieden",
   "catalog": "gebieden",
   "dagParameters": {
     "schedule": "0 0 * * *"

@@ -1,4 +1,5 @@
 {
+  "dag_id": "brk2",
   "catalog": "brk2",
   "prepare": true,
   "collections": [

@@ -3,7 +3,6 @@ from typing import Any
 
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-
 from benk.common import NAMESPACE, TEAM_NAME, BaseOperaterArgs
 from benk.environment import IburgerZakenEnvironment
 from benk.image import Image

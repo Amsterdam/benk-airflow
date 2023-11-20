@@ -1,0 +1,16 @@
+{
+  "dag_id": "brk2_gemeentes",
+  "catalog": "brk2",
+  "dagParameters": {
+    "schedule": "0 0 * * *"
+  },
+  "collections": [
+    {
+      "collection": "gemeentes",
+      "import": {
+        "application": "GOBPrepare"
+      },
+      "relations": []
+    }
+  ]
+}
