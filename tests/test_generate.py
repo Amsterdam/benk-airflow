@@ -1,10 +1,9 @@
 import json
-from datetime import datetime
 from unittest.mock import patch, call
 
 from freezegun import freeze_time
 
-from benk.common import BaseOperaterArgs
+from benk.common import BaseOperaterArgs, START_DATE
 
 
 class MockDag:
@@ -60,7 +59,7 @@ class TestGenerate:
                 user_defined_macros={"json": json},
                 schedule_interval=None,
                 catchup=False,
-                start_date=datetime.utcnow(),
+                start_date=START_DATE,
                 schedule="my schedule"
             )
 
