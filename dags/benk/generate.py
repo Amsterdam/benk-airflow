@@ -21,6 +21,7 @@ for definition in DEFINITIONS:
         schedule_interval=None,
         catchup=False,
         start_date=START_DATE,  # fix start date
+        max_active_tasks=MAX_ACTIVE_TASKS,
         **kwargs
     ):
         initialise = Initialise()

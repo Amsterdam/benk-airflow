@@ -18,3 +18,6 @@ REGISTRY_URL: Final = "{{ var.value.get('pod-container-registry-url') }}"
 AKS_NODE_POOL: Final = "benkbbn1work"
 
 START_DATE = datetime.datetime(2023, 11, 1)
+
+# default of 16 uses too much resource, try 8
+MAX_ACTIVE_TASKS: Final = 8
