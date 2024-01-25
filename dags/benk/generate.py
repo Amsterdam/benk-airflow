@@ -3,7 +3,7 @@ import json
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
 
-from benk.common import START_DATE, BaseOperaterArgs
+from benk.common import MAX_ACTIVE_TASKS, START_DATE, BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
 from benk.workflow import Import, Initialise, Prepare, Relate
