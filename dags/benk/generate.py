@@ -2,6 +2,7 @@ import json
 
 from airflow import DAG
 from airflow.models.baseoperator import cross_downstream
+from airflow.models.param import Param
 
 from benk.common import MAX_ACTIVE_TASKS, START_DATE, BaseOperaterArgs
 from benk.definitions import DEFINITIONS
@@ -22,6 +23,7 @@ for definition in DEFINITIONS:
         catchup=False,
         start_date=START_DATE,  # fix start date
         max_active_tasks=MAX_ACTIVE_TASKS,
+        params={"relate_mode": Param(type="string", default="update")},
         **kwargs
     ):
         initialise = Initialise()

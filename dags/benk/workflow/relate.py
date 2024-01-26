@@ -38,6 +38,7 @@ class Relate(BaseDAG):
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
                 f"--attribute={self.attribute}",
+                "--mode {{ params.relate_mode }}",
             ],
             trigger_rule=TriggerRule.ALL_DONE,  # trigger task when dependency is done, fail or success
             **UploadArgs,
