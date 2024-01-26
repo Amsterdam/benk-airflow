@@ -8,8 +8,8 @@ BaseOperaterArgs: Final = {
     "email": ["ois.gob@amsterdam.nl"],
     "email_on_failure": False,
     "email_on_retry": False,
-    "retries": 1,
-    "retry_delay": timedelta(seconds=30),
+    "retries": 0,
+    "retry_delay": timedelta(seconds=300),
 }
 
 TEAM_NAME: Final = "BenK"
@@ -18,3 +18,6 @@ REGISTRY_URL: Final = "{{ var.value.get('pod-container-registry-url') }}"
 AKS_NODE_POOL: Final = "benkbbn1work"
 
 START_DATE = datetime.datetime(2023, 11, 1)
+
+# default of 16 uses too much resource, try 8
+MAX_ACTIVE_TASKS: Final = 8

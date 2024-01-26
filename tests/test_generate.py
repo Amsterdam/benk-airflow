@@ -3,7 +3,7 @@ from unittest.mock import patch, call
 
 from freezegun import freeze_time
 
-from benk.common import BaseOperaterArgs, START_DATE
+from benk.common import BaseOperaterArgs, START_DATE, MAX_ACTIVE_TASKS
 
 
 class MockDag:
@@ -60,6 +60,7 @@ class TestGenerate:
                 schedule_interval=None,
                 catchup=False,
                 start_date=START_DATE,
+                max_active_tasks=MAX_ACTIVE_TASKS,
                 schedule="my schedule"
             )
 
