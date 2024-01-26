@@ -23,7 +23,7 @@ for definition in DEFINITIONS:
         catchup=False,
         start_date=START_DATE,  # fix start date
         max_active_tasks=MAX_ACTIVE_TASKS,
-        params={"relate_mode": Param(type="string", default="update")},
+        params={"relate_mode": Param(type="string", default="update", description="update or full")},
         **kwargs
     ):
         initialise = Initialise()

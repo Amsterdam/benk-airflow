@@ -66,7 +66,7 @@ class TestGenerate:
                 schedule="my schedule"
             )
 
-            mock_param.assert_called_with(type="string", default="update")
+            mock_param.assert_called_with(type="string", default="update", description="update or full")
 
             mock_cross_downstream.assert_has_calls([
                 call(["initialise-"], ["import-nap_peilmerken_Grondslag"]),
