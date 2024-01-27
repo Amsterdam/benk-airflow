@@ -1,4 +1,6 @@
+from airflow.exceptions import AirflowSkipException
 from airflow.models.baseoperator import BaseOperator, chain
+from airflow.operators.python import PythonOperator
 
 from benk.workflow.workflow import BaseDAG, ImportArgs, UploadArgs, XCom
 
@@ -31,6 +33,7 @@ class Import(BaseDAG):
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
                 f"--application={self.application}",
+                "--mode={{ params.import_mode }}",
             ],
             **ImportArgs,
         )
@@ -89,3 +92,31 @@ class Import(BaseDAG):
     def get_start_nodes(self) -> list[BaseOperator]:
         """Return the start nodes of this DAG. Used to link this DAG to other DAGs."""
         return [self._tasks[0]]
+
+
+def _skip_operator():
+    raise AirflowSkipException("Import skipped")
+
+
+class ImportSkipped(Import):
+    """Class representing tasks container that will be skipped when run."""
+
+    def _import(self):
+        name = "import"
+        return PythonOperator(task_id=self.get_taskid(name), python_callable=_skip_operator)
+
+    def _update(self):
+        name = "update"
+        return PythonOperator(task_id=self.get_taskid(name), python_callable=_skip_operator)
+
+    def _compare(self):
+        name = "compare"
+        return PythonOperator(task_id=self.get_taskid(name), python_callable=_skip_operator)
+
+    def _upload(self):
+        name = "upload"
+        return PythonOperator(task_id=self.get_taskid(name), python_callable=_skip_operator)
+
+    def _apply(self):
+        name = "apply"
+        return PythonOperator(task_id=self.get_taskid(name), python_callable=_skip_operator)

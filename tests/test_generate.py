@@ -62,11 +62,17 @@ class TestGenerate:
                 catchup=False,
                 start_date=START_DATE,
                 max_active_tasks=MAX_ACTIVE_TASKS,
-                params={'relate_mode': mock_param.return_value},
+                params={
+                    "relate_mode": mock_param.return_value,
+                    "import_mode": mock_param.return_value
+                },
                 schedule="my schedule"
             )
 
-            mock_param.assert_called_with(enum=["update", "full"], default="update")
+            mock_param.assert_has_calls([
+                call(enum=["update", "full"], default="update"),
+                call(enum=["recent", "full", "skip"], default="full"),
+            ])
 
             mock_cross_downstream.assert_has_calls([
                 call(["initialise-"], ["import-nap_peilmerken_Grondslag"]),

@@ -1,5 +1,10 @@
 from unittest import mock, TestCase
 
+from airflow.exceptions import AirflowSkipException
+from airflow.operators.python import PythonOperator
+
+from benk.workflow.import_ import _skip_operator
+
 
 class TestWorkflow(TestCase):
 
@@ -47,3 +52,35 @@ class TestWorkflow(TestCase):
             else:
                 assert "xcom_task_id" not in task.params
                 assert XCom.get_template() not in task.arguments
+
+
+class TestSkippedWorkflow(TestCase):
+
+    @mock.patch("benk.workflow.import_.chain")
+    def setUp(self, mock_chain):
+        from benk.workflow import ImportSkipped
+        self.mock_chain = mock_chain
+        self.import_ = ImportSkipped("cat", "col", "app")
+
+    def test_skipped_import(self):
+        import_ = self.import_
+
+        assert import_.id == "import_cat_col_app"
+
+        self.mock_chain.assert_called_with(*import_._tasks)
+
+        assert all(isinstance(t, PythonOperator) for t in import_._tasks)
+
+        assert [t.task_id for t in import_._tasks] == [
+            "import_cat_col_app-import",
+            "import_cat_col_app-update",
+            "import_cat_col_app-compare",
+            "import_cat_col_app-upload",
+            "import_cat_col_app-apply"
+        ]
+
+        assert all(t.python_callable is _skip_operator for t in import_._tasks)
+
+    def test_skip_operator(self):
+        with self.assertRaisesRegex(AirflowSkipException, "Import skipped"):
+            _skip_operator()

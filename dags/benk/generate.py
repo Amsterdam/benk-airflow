@@ -7,7 +7,7 @@ from airflow.models.param import Param
 from benk.common import MAX_ACTIVE_TASKS, START_DATE, BaseOperaterArgs
 from benk.definitions import DEFINITIONS
 from benk.utils import flatten_list
-from benk.workflow import Import, Initialise, Prepare, Relate
+from benk.workflow import Import, ImportSkipped, Initialise, Prepare, Relate
 
 for definition in DEFINITIONS:
     name = definition.dag_id
@@ -23,7 +23,10 @@ for definition in DEFINITIONS:
         catchup=False,
         start_date=START_DATE,  # fix start date
         max_active_tasks=MAX_ACTIVE_TASKS,
-        params={"relate_mode": Param(enum=["update", "full"], default="update")},
+        params={
+            "relate_mode": Param(enum=["update", "full"], default="update"),
+            "import_mode": Param(enum=["recent", "full", "skip"], default="full"),
+        },
         **kwargs
     ):
         initialise = Initialise()
@@ -31,7 +34,9 @@ for definition in DEFINITIONS:
         imports = []
         relates = []
         for collection in definition.collections:
-            imports.append(Import(definition.catalog, collection.collection, collection.import_.application))
+            ImportTask = ImportSkipped if "{{ params.import_mode }}" == "skip" else Import  # type: ignore
+
+            imports.append(ImportTask(definition.catalog, collection.collection, collection.import_.application))
 
             relates += [
                 Relate(definition.catalog, collection.collection, relation) for relation in collection.relations
