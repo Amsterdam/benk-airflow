@@ -71,7 +71,7 @@ class TestGenerate:
 
             mock_param.assert_has_calls([
                 call(enum=["update", "full"], default="update"),
-                call(enum=["recent", "full", "skip"], default="full"),
+                call(enum=["recent", "full"], default="full"),
             ])
 
             mock_cross_downstream.assert_has_calls([
