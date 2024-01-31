@@ -31,6 +31,7 @@ class Import(BaseDAG):
                 f"--catalogue={self.catalogue}",
                 f"--collection={self.collection}",
                 f"--application={self.application}",
+                "--mode={{ params.import_mode }}",
             ],
             **ImportArgs,
         )

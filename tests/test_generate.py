@@ -46,6 +46,7 @@ class TestGenerate:
             patch("benk.workflow.Prepare", MockPrepareDag),
             patch("benk.workflow.Initialise", MockInitialiseDag),
             patch("airflow.models.baseoperator.cross_downstream") as mock_cross_downstream,
+            patch("airflow.models.param.Param") as mock_param
         ):
 
             # run generate DAG
@@ -61,8 +62,17 @@ class TestGenerate:
                 catchup=False,
                 start_date=START_DATE,
                 max_active_tasks=MAX_ACTIVE_TASKS,
+                params={
+                    "relate_mode": mock_param.return_value,
+                    "import_mode": mock_param.return_value
+                },
                 schedule="my schedule"
             )
+
+            mock_param.assert_has_calls([
+                call(enum=["update", "full"], default="update"),
+                call(enum=["recent", "full"], default="full"),
+            ])
 
             mock_cross_downstream.assert_has_calls([
                 call(["initialise-"], ["import-nap_peilmerken_Grondslag"]),
