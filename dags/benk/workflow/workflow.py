@@ -18,7 +18,7 @@ operator_default_args = {
     "reattach_on_restart": False,
     "do_xcom_push": True,
     "is_delete_operator_pod": True,
-    "startup_timeout_seconds": 120,  # default
+    "startup_timeout_seconds": 240,  # twice default
     # Select a specific nodepool to use. Could also be specified by nodeAffinity.
     # Make sure we are running on workers in our namespace
     # specifying namespace parameter is not sufficient
