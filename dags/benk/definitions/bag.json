@@ -15,7 +15,7 @@
     {
       "collection": "dossiers",
       "import": {
-        "application": "GOBPrepare"
+        "application": "Decos"
       },
       "relations": [
         "heeft_brondocumenten"
