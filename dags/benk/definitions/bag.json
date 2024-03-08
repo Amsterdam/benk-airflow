@@ -24,7 +24,7 @@
     {
       "collection": "ligplaatsen",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -38,7 +38,7 @@
     {
       "collection": "nummeraanduidingen",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -53,14 +53,14 @@
     {
       "collection": "onderzoeken",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": []
     },
     {
       "collection": "openbareruimtes",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -71,7 +71,7 @@
     {
       "collection": "panden",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -83,7 +83,7 @@
     {
       "collection": "standplaatsen",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -97,7 +97,7 @@
     {
       "collection": "verblijfsobjecten",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
@@ -112,7 +112,7 @@
     {
       "collection": "woonplaatsen",
       "import": {
-        "application": "Neuron"
+        "application": "GOBPrepare"
       },
       "relations": [
         "heeft_onderzoeken",
